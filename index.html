@@ -35,3 +35,218 @@
     <!-- Rest van de code hier -->
 </body>
 </html>
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-blue-900 mb-4">Strandcabines Blankenberge</h1>
+        <p class="text-blue-700">Verhuur seizoen 2024 - April tot September</p>
+    </header>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Cabin 1 -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 1</h2>
+                
+                <div class="mb-6">
+                    <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
+                    <ul class="list-disc list-inside space-y-1 text-gray-600">
+                        <li>1 Tafel</li>
+                        <li>2 Stoelen</li>
+                        <li>2 Strandstoelen</li>
+                        <li>1 Gordijn</li>
+                        <li>Strandspeelgoed</li>
+                        <li>1 Borsteltje</li>
+                    </ul>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
+                    <div class="space-y-2 text-gray-600">
+                        <p>Per dag: €50</p>
+                        <p>Per 2 weken: €200</p>
+                        <div class="mt-2">
+                            <p class="font-medium">Per maand:</p>
+                            <ul class="ml-4 space-y-1">
+                                <li>April: €350</li>
+                                <li>Mei: €400</li>
+                                <li>Juni-Augustus: €500</li>
+                                <li>September: €350</li>
+                            </ul>
+                        </div>
+                        <p class="mt-2 font-medium">Heel seizoen: €1800</p>
+                    </div>
+                </div>
+<!-- Cabin 2 -->
+<div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="p-6">
+        <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 2</h2>
+        
+        <div class="mb-6">
+            <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
+            <ul class="list-disc list-inside space-y-1 text-gray-600">
+                <li>1 Tafel</li>
+                <li>2 Stoelen</li>
+                <li>2 Strandstoelen</li>
+                <li>1 Gordijn</li>
+                <li>Strandspeelgoed</li>
+                <li>1 Borsteltje</li>
+            </ul>
+        </div>
+
+        <div class="mb-6">
+            <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
+            <div class="space-y-2 text-gray-600">
+                <p>Per dag: €50</p>
+                <p>Per 2 weken: €200</p>
+                <div class="mt-2">
+                    <p class="font-medium">Per maand:</p>
+                    <ul class="ml-4 space-y-1">
+                        <li>April: €350</li>
+                        <li>Mei: €400</li>
+                        <li>Juni-Augustus: €500</li>
+                        <li>September: €350</li>
+                    </ul>
+                </div>
+                <p class="mt-2 font-medium">Heel seizoen: €1800</p>
+            </div>
+        </div>
+
+        <button onclick="openBooking(2)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            Reserveer Nu
+        </button>
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div id="bookingModal" class="modal">
+    <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto">
+        <h2 id="modalTitle" class="text-2xl font-bold mb-6">Reserveer Strandcabine</h2>
+        
+        <form id="bookingForm" onsubmit="handleBooking(event)" class="space-y-4">
+            <!-- Form fields here -->
+        </form>
+    </div>
+</div>
+<!-- Cabin 2 -->
+<div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="p-6">
+        <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 2</h2>
+        
+        <div class="mb-6">
+            <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
+            <ul class="list-disc list-inside space-y-1 text-gray-600">
+                <li>1 Tafel</li>
+                <li>2 Stoelen</li>
+                <li>2 Strandstoelen</li>
+                <li>1 Gordijn</li>
+                <li>Strandspeelgoed</li>
+                <li>1 Borsteltje</li>
+            </ul>
+        </div>
+
+        <div class="mb-6">
+            <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
+            <div class="space-y-2 text-gray-600">
+                <p>Per dag: €50</p>
+                <p>Per 2 weken: €200</p>
+                <div class="mt-2">
+                    <p class="font-medium">Per maand:</p>
+                    <ul class="ml-4 space-y-1">
+                        <li>April: €350</li>
+                        <li>Mei: €400</li>
+                        <li>Juni-Augustus: €500</li>
+                        <li>September: €350</li>
+                    </ul>
+                </div>
+                <p class="mt-2 font-medium">Heel seizoen: €1800</p>
+            </div>
+        </div>
+
+        <button onclick="openBooking(2)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            Reserveer Nu
+        </button>
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div id="bookingModal" class="modal">
+    <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto">
+        <h2 id="modalTitle" class="text-2xl font-bold mb-6">Reserveer Strandcabine</h2>
+        
+        <form id="bookingForm" onsubmit="handleBooking(event)" class="space-y-4">
+            <!-- Form fields here -->
+        </form>
+    </div>
+</div>
+<script>
+    // Calendar initialization
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    function generateCalendar(year, month) {
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+        const totalDays = lastDay.getDate();
+        
+        let calendarHtml = '';
+        
+        // Empty cells before first day
+        for (let i = 0; i < startDay; i++) {
+            calendarHtml += '<div class="calendar-day"></div>';
+        }
+        
+        // Days of the month
+        for (let day = 1; day <= totalDays; day++) {
+            const date = new Date(year, month, day);
+            const isAvailable = Math.random() > 0.3; // Mock availability
+            const bgColor = isAvailable ? 'bg-green-100 hover:bg-green-200 cursor-pointer' : 'bg-red-100';
+            
+            calendarHtml += `
+                <div class="calendar-day ${bgColor} rounded">
+                    ${day}
+                </div>
+            `;
+        }
+        
+        document.querySelectorAll('.calendar-grid').forEach(grid => {
+            const weekDays = Array.from(grid.children).slice(0, 7);
+            grid.innerHTML = weekDays.map(day => day.outerHTML).join('') + calendarHtml;
+        });
+    }
+
+    // Booking handlers
+    let activeCabinId = null;
+
+    function openBooking(cabinId) {
+        activeCabinId = cabinId;
+        document.getElementById('modalTitle').textContent = `Reserveer Strandcabine ${cabinId}`;
+        document.getElementById('bookingModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('bookingModal').classList.remove('active');
+        document.getElementById('confirmationModal').classList.remove('active');
+        activeCabinId = null;
+    }
+
+    function handleBooking(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        console.log('Booking:', Object.fromEntries(formData));
+        document.getElementById('bookingModal').classList.remove('active');
+        document.getElementById('confirmationModal').classList.add('active');
+        event.target.reset();
+    }
+
+    // Initialize
+    generateCalendar(currentYear, currentMonth);
+
+    // Close modals on outside click
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            closeModal();
+        }
+    }
+</script>
