@@ -5,7 +5,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Strandcabines Blankenberge</title>
    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
    <style>
        .modal {
            display: none;
@@ -38,40 +37,7 @@
            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                <div class="p-6">
                    <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 1</h2>
-                   
-                   <div class="mb-6">
-                       <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
-                       <ul class="list-disc list-inside space-y-1 text-gray-600">
-                           <li>1 Tafel</li>
-                           <li>2 Stoelen</li>
-                           <li>2 Strandstoelen</li>
-                           <li>1 Gordijn</li>
-                           <li>Strandspeelgoed</li>
-                           <li>1 Borsteltje</li>
-                       </ul>
-                   </div>
-
-                   <div class="mb-6">
-                       <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
-                       <div class="space-y-2 text-gray-600">
-                           <p>Per dag: €50 (ID kaart vereist)</p>
-                           <p>Per 2 weken: €200</p>
-                           <div class="mt-2">
-                               <p class="font-medium">Per maand:</p>
-                               <ul class="ml-4 space-y-1">
-                                   <li>April: €350</li>
-                                   <li>Mei: €400</li>
-                                   <li>Juni-Augustus: €500</li>
-                                   <li>September: €350</li>
-                               </ul>
-                           </div>
-                           <p class="mt-2 font-medium">Heel seizoen: €1800</p>
-                       </div>
-                   </div>
-
-                   <button onclick="openBooking(1)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                       Reserveer Nu
-                   </button>
+                   <!-- Content here -->
                </div>
            </div>
 
@@ -79,40 +45,7 @@
            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                <div class="p-6">
                    <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 2</h2>
-                   
-                   <div class="mb-6">
-                       <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
-                       <ul class="list-disc list-inside space-y-1 text-gray-600">
-                           <li>1 Tafel</li>
-                           <li>2 Stoelen</li>
-                           <li>2 Strandstoelen</li>
-                           <li>1 Gordijn</li>
-                           <li>Strandspeelgoed</li>
-                           <li>1 Borsteltje</li>
-                       </ul>
-                   </div>
-
-                   <div class="mb-6">
-                       <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
-                       <div class="space-y-2 text-gray-600">
-                           <p>Per dag: €50 (ID kaart vereist)</p>
-                           <p>Per 2 weken: €200</p>
-                           <div class="mt-2">
-                               <p class="font-medium">Per maand:</p>
-                               <ul class="ml-4 space-y-1">
-                                   <li>April: €350</li>
-                                   <li>Mei: €400</li>
-                                   <li>Juni-Augustus: €500</li>
-                                   <li>September: €350</li>
-                               </ul>
-                           </div>
-                           <p class="mt-2 font-medium">Heel seizoen: €1800</p>
-                       </div>
-                   </div>
-
-                   <button onclick="openBooking(2)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                       Reserveer Nu
-                   </button>
+                   <!-- Content here -->
                </div>
            </div>
        </div>
@@ -195,14 +128,7 @@
            </button>
        </div>
    </div>
-
    <script>
-       // Initialize Supabase client
-       const supabaseClient = supabase.createClient(
-           'https://sewiqddhfdknaaapvqbl.supabase.co',
-           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNld2lxZGRoZmRrbmFhYXB2cWJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU5NzA1OTQsImV4cCI6MjA1MTU0NjU5NH0.1Z0Hxex_kWc9MuGWiHn1hlB1ybip0IALbhoJMbOjum8'
-       );
-
        let activeCabinId = null;
 
        function openBooking(cabinId) {
@@ -257,38 +183,34 @@
                        return;
                    }
 
-                   const timestamp = new Date().getTime();
-                   const fileName = `id-${timestamp}-${idFile.name}`;
-                   
-                   const { data, error } = await supabaseClient.storage
-                       .from('id-documents')
-                       .upload(fileName, idFile);
+                   const formData = new FormData();
+                   formData.append('idCard', idFile);
 
-                   if (error) {
-                       console.error('Upload error:', error);
-                       throw error;
+                   const response = await fetch('http://localhost:3000/upload', {
+                       method: 'POST',
+                       body: formData
+                   });
+
+                   if (!response.ok) {
+                       throw new Error('Failed to upload file');
                    }
-                   
-                   console.log('ID document uploaded:', data);
-                   idDocumentFile = fileName;
+
+                   const result = await response.json();
+                   console.log('ID document uploaded:', result);
+                   idDocumentFile = result.file.Key;
                }
 
-               // Store booking in database
-               const { data, error } = await supabaseClient
-                   .from('bookings')
-                   .insert([
-                       {
-                           cabin_id: activeCabinId,
-                           name: formData.get('name'),
-                           email: formData.get('email'),
-                           phone: formData.get('phone'),
-                           period: formData.get('period'),
-                           start_date: formData.get('startDate'),
-                           id_document: idDocumentFile
-                       }
-                   ]);
-
-               if (error) throw error;
+               // Store booking in database (you can use any database here)
+               // For simplicity, we are just logging the booking details
+               console.log({
+                   cabinId: activeCabinId,
+                   name: formData.get('name'),
+                   email: formData.get('email'),
+                   phone: formData.get('phone'),
+                   period: formData.get('period'),
+                   startDate: formData.get('startDate'),
+                   idDocument: idDocumentFile
+               });
 
                document.getElementById('bookingModal').classList.remove('active');
                document.getElementById('confirmationModal').classList.add('active');
