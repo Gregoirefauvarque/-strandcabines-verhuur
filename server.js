@@ -1,4 +1,4 @@
-const express = require('express');
+onst express = require('express');
 const multer = require('multer');
 const cors = require('cors');
 const AWS = require('aws-sdk');
@@ -14,7 +14,11 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Load AWS credentials
-AWS.config.loadFromPath('./config.json');
+AWS.config.update({
+    accessKeyId: 'AKIAUBKFCAD2HQUORJUA',
+    secretAccessKey: '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',
+    region: 'Europe (Stockholm) eu-north-1'
+});
 
 const s3 = new AWS.S3();
 
