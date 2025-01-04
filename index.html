@@ -5,19 +5,8 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Strandcabines Blankenberge</title>
    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
    <style>
-       .calendar-grid {
-           display: grid;
-           grid-template-columns: repeat(7, 1fr);
-           gap: 2px;
-       }
-       .calendar-day {
-           aspect-ratio: 1;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-       }
        .modal {
            display: none;
            position: fixed;
@@ -26,6 +15,7 @@
            width: 100%;
            height: 100%;
            background: rgba(0, 0, 0, 0.5);
+           z-index: 50;
        }
        .modal.active {
            display: flex;
@@ -207,24 +197,29 @@
    </div>
 
    <script>
-       // Supabase setup
-       const supabaseUrl = 'https://xismkeonrbkzuycbdvwz.supabase.co';
-       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpc21rZW9ucmJrenV5Y2Jkdnd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDUxNDYyODUsImV4cCI6MjAyMDcyMjI4NX0.lxNPxBWz-0qZvK2lkcz__WsWFzLFTwxNXK5nW2H8vgY';
-       const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+       // Initialize Supabase client
+       const supabaseClient = supabase.createClient(
+           'https://xismkeonrbkzuycbdvwz.supabase.co',
+           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpc21rZW9ucmJrenV5Y2Jkdnd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDUxNDYyODUsImV4cCI6MjAyMDcyMjI4NX0.lxNPxBWz-0qZvK2lkcz__WsWFzLFTwxNXK5nW2H8vgY'
+       );
 
        let activeCabinId = null;
 
        function openBooking(cabinId) {
+           console.log('Opening booking for cabin:', cabinId);
            activeCabinId = cabinId;
+           const modal = document.getElementById('bookingModal');
+           modal.classList.add('active');
            document.getElementById('modalTitle').textContent = `Reserveer Strandcabine ${cabinId}`;
-           document.getElementById('bookingModal').classList.add('active');
        }
 
        function closeModal() {
            document.getElementById('bookingModal').classList.remove('active');
            document.getElementById('confirmationModal').classList.remove('active');
-           document.getElementById('bookingForm').reset();
-           document.getElementById('idUploadField').style.display = 'none';
+           const form = document.getElementById('bookingForm');
+           if (form) form.reset();
+           const idUploadField = document.getElementById('idUploadField');
+           if (idUploadField) idUploadField.style.display = 'none';
            activeCabinId = null;
        }
 
@@ -239,7 +234,6 @@
            const formData = new FormData(form);
            const period = formData.get('period');
            
-           // Log form data for debugging
            console.log('Form data:', {
                cabinId: activeCabinId,
                name: formData.get('name'),
@@ -255,6 +249,7 @@
            submitBtn.textContent = 'Bezig met reserveren...';
 
            try {
+               let idDocumentFile = null;
                if (period === 'day') {
                    const idFile = document.getElementById('idCard').files[0];
                    if (!idFile) {
@@ -262,11 +257,10 @@
                        return;
                    }
 
-                   // Upload ID document to Supabase
                    const timestamp = new Date().getTime();
                    const fileName = `id-${timestamp}-${idFile.name}`;
                    
-                   const { data, error } = await supabase.storage
+                   const { data, error } = await supabaseClient.storage
                        .from('id-documents')
                        .upload(fileName, idFile);
 
@@ -276,11 +270,11 @@
                    }
                    
                    console.log('ID document uploaded:', data);
-                   formData.append('idDocument', fileName);
+                   idDocumentFile = fileName;
                }
 
                // Store booking in database
-               const { data, error } = await supabase
+               const { data, error } = await supabaseClient
                    .from('bookings')
                    .insert([
                        {
@@ -290,13 +284,12 @@
                            phone: formData.get('phone'),
                            period: formData.get('period'),
                            start_date: formData.get('startDate'),
-                           id_document: formData.get('idDocument') || null
+                           id_document: idDocumentFile
                        }
                    ]);
 
                if (error) throw error;
 
-               // Show confirmation
                document.getElementById('bookingModal').classList.remove('active');
                document.getElementById('confirmationModal').classList.add('active');
                form.reset();
