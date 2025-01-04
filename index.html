@@ -1,296 +1,284 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strandcabines Blankenberge</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-        }
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-        }
-        .modal.active {
-            display: flex;
-        }
-        .form-loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-    </style>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Strandcabines Blankenberge</title>
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+   <style>
+       .calendar-grid {
+           display: grid;
+           grid-template-columns: repeat(7, 1fr);
+           gap: 2px;
+       }
+       .calendar-day {
+           aspect-ratio: 1;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+       }
+       .modal {
+           display: none;
+           position: fixed;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background: rgba(0, 0, 0, 0.5);
+       }
+       .modal.active {
+           display: flex;
+       }
+       .form-loading {
+           opacity: 0.7;
+           pointer-events: none;
+       }
+   </style>
 </head>
 <body class="bg-blue-50 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <header class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-blue-900 mb-4">Strandcabines Blankenberge</h1>
-            <p class="text-blue-700">Verhuur seizoen 2024 - April tot September</p>
-        </header>
+   <div class="max-w-7xl mx-auto px-4 py-8">
+       <header class="text-center mb-12">
+           <h1 class="text-4xl font-bold text-blue-900 mb-4">Strandcabines Blankenberge</h1>
+           <p class="text-blue-700">Verhuur seizoen 2024 - April tot September</p>
+       </header>
 
-        <div class="grid md:grid-cols-2 gap-8">
-            <!-- Cabin 1 -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="p-6">
-                    <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 1</h2>
-                    
-                    <div class="mb-6">
-                        <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
-                        <ul class="list-disc list-inside space-y-1 text-gray-600">
-                            <li>1 Tafel</li>
-                            <li>2 Stoelen</li>
-                            <li>2 Strandstoelen</li>
-                            <li>1 Gordijn</li>
-                            <li>Strandspeelgoed</li>
-                            <li>1 Borsteltje</li>
-                        </ul>
-                    </div>
+       <div class="grid md:grid-cols-2 gap-8">
+           <!-- Cabin 1 -->
+           <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+               <div class="p-6">
+                   <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 1</h2>
+                   
+                   <div class="mb-6">
+                       <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
+                       <ul class="list-disc list-inside space-y-1 text-gray-600">
+                           <li>1 Tafel</li>
+                           <li>2 Stoelen</li>
+                           <li>2 Strandstoelen</li>
+                           <li>1 Gordijn</li>
+                           <li>Strandspeelgoed</li>
+                           <li>1 Borsteltje</li>
+                       </ul>
+                   </div>
 
-                    <div class="mb-6">
-                        <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
-                        <div class="space-y-2 text-gray-600">
-                            <p>Per dag: €50 (ID kaart vereist)</p>
-                            <p>Per 2 weken: €200</p>
-                            <div class="mt-2">
-                                <p class="font-medium">Per maand:</p>
-                                <ul class="ml-4 space-y-1">
-                                    <li>April: €350</li>
-                                    <li>Mei: €400</li>
-                                    <li>Juni-Augustus: €500</li>
-                                    <li>September: €350</li>
-                                </ul>
-                            </div>
-                            <p class="mt-2 font-medium">Heel seizoen: €1800</p>
-                        </div>
-                    </div>
+                   <div class="mb-6">
+                       <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
+                       <div class="space-y-2 text-gray-600">
+                           <p>Per dag: €50 (ID kaart vereist)</p>
+                           <p>Per 2 weken: €200</p>
+                           <div class="mt-2">
+                               <p class="font-medium">Per maand:</p>
+                               <ul class="ml-4 space-y-1">
+                                   <li>April: €350</li>
+                                   <li>Mei: €400</li>
+                                   <li>Juni-Augustus: €500</li>
+                                   <li>September: €350</li>
+                               </ul>
+                           </div>
+                           <p class="mt-2 font-medium">Heel seizoen: €1800</p>
+                       </div>
+                   </div>
 
-                    <button onclick="openBooking(1)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                        Reserveer Nu
-                    </button>
-                </div>
-            </div>
+                   <button onclick="openBooking(1)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                       Reserveer Nu
+                   </button>
+               </div>
+           </div>
 
-            <!-- Cabin 2 -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="p-6">
-                    <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 2</h2>
-                    
-                    <div class="mb-6">
-                        <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
-                        <ul class="list-disc list-inside space-y-1 text-gray-600">
-                            <li>1 Tafel</li>
-                            <li>2 Stoelen</li>
-                            <li>2 Strandstoelen</li>
-                            <li>1 Gordijn</li>
-                            <li>Strandspeelgoed</li>
-                            <li>1 Borsteltje</li>
-                        </ul>
-                    </div>
+           <!-- Cabin 2 -->
+           <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+               <div class="p-6">
+                   <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 2</h2>
+                   
+                   <div class="mb-6">
+                       <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
+                       <ul class="list-disc list-inside space-y-1 text-gray-600">
+                           <li>1 Tafel</li>
+                           <li>2 Stoelen</li>
+                           <li>2 Strandstoelen</li>
+                           <li>1 Gordijn</li>
+                           <li>Strandspeelgoed</li>
+                           <li>1 Borsteltje</li>
+                       </ul>
+                   </div>
 
-                    <div class="mb-6">
-                        <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
-                        <div class="space-y-2 text-gray-600">
-                            <p>Per dag: €50 (ID kaart vereist)</p>
-                            <p>Per 2 weken: €200</p>
-                            <div class="mt-2">
-                                <p class="font-medium">Per maand:</p>
-                                <ul class="ml-4 space-y-1">
-                                    <li>April: €350</li>
-                                    <li>Mei: €400</li>
-                                    <li>Juni-Augustus: €500</li>
-                                    <li>September: €350</li>
-                                </ul>
-                            </div>
-                            <p class="mt-2 font-medium">Heel seizoen: €1800</p>
-                        </div>
-                    </div>
+                   <div class="mb-6">
+                       <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
+                       <div class="space-y-2 text-gray-600">
+                           <p>Per dag: €50 (ID kaart vereist)</p>
+                           <p>Per 2 weken: €200</p>
+                           <div class="mt-2">
+                               <p class="font-medium">Per maand:</p>
+                               <ul class="ml-4 space-y-1">
+                                   <li>April: €350</li>
+                                   <li>Mei: €400</li>
+                                   <li>Juni-Augustus: €500</li>
+                                   <li>September: €350</li>
+                               </ul>
+                           </div>
+                           <p class="mt-2 font-medium">Heel seizoen: €1800</p>
+                       </div>
+                   </div>
 
-                    <button onclick="openBooking(2)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                        Reserveer Nu
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+                   <button onclick="openBooking(2)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                       Reserveer Nu
+                   </button>
+               </div>
+           </div>
+       </div>
+   </div>
 
-    <!-- Booking Modal -->
-    <div id="bookingModal" class="modal">
-        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto">
-            <h2 id="modalTitle" class="text-2xl font-bold mb-6">Reserveer Strandcabine</h2>
-            
-            <form id="bookingForm" onsubmit="handleBooking(event)" class="space-y-4">
-                <div>
-                    <label class="block mb-1 font-medium">Naam</label>
-                    <input type="text" name="name" required class="w-full p-2 border rounded">
-                </div>
-                
-                <div>
-                    <label class="block mb-1 font-medium">Email</label>
-                    <input type="email" name="email" required class="w-full p-2 border rounded">
-                </div>
+   <!-- Booking Modal -->
+   <div id="bookingModal" class="modal">
+       <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto">
+           <h2 id="modalTitle" class="text-2xl font-bold mb-6">Reserveer Strandcabine</h2>
+           
+           <form id="bookingForm" onsubmit="handleBooking(event)" class="space-y-4">
+               <div>
+                   <label class="block mb-1 font-medium">Naam</label>
+                   <input type="text" name="name" required class="w-full p-2 border rounded">
+               </div>
+               
+               <div>
+                   <label class="block mb-1 font-medium">Email</label>
+                   <input type="email" name="email" required class="w-full p-2 border rounded">
+               </div>
 
-                <div>
-                    <label class="block mb-1 font-medium">Telefoon</label>
-                    <input type="tel" name="phone" required class="w-full p-2 border rounded">
-                </div>
+               <div>
+                   <label class="block mb-1 font-medium">Telefoon</label>
+                   <input type="tel" name="phone" required class="w-full p-2 border rounded">
+               </div>
 
-                <div>
-                    <label class="block mb-1 font-medium">Periode</label>
-                    <select name="period" required class="w-full p-2 border rounded">
-                        <option value="day">Per dag (€50)</option>
-                        <option value="twoWeeks">2 weken (€200)</option>
-                        <option value="month">Per maand (vanaf €350)</option>
-                        <option value="season">Heel seizoen (€1800)</option>
-                    </select>
-                </div>
+               <div>
+                   <label class="block mb-1 font-medium">Periode</label>
+                   <select name="period" required class="w-full p-2 border rounded" onchange="toggleIdUpload(this.value)">
+                       <option value="day">Per dag (€50)</option>
+                       <option value="twoWeeks">2 weken (€200)</option>
+                       <option value="month">Per maand (vanaf €350)</option>
+                       <option value="season">Heel seizoen (€1800)</option>
+                   </select>
+               </div>
 
-                <div>
-                    <label class="block mb-1 font-medium">Start datum</label>
-                    <input type="date" name="startDate" required min="2024-04-01" max="2024-09-30" class="w-full p-2 border rounded">
-                </div>
+               <div>
+                   <label class="block mb-1 font-medium">Start datum</label>
+                   <input type="date" name="startDate" required min="2024-04-01" max="2024-09-30" class="w-full p-2 border rounded">
+               </div>
 
-                <div id="idUploadField" style="display: none;">
-                    <label class="block mb-1 font-medium">Identiteitskaart foto (verplicht voor dagverhuur)</label>
-                    <input 
-                        type="file" 
-                        name="idCard" 
-                        id="idCard"
-                        accept="image/*"
-                        class="w-full p-2 border rounded"
-                    />
-                    <p class="text-sm text-gray-500 mt-1">Upload een duidelijke foto van uw identiteitskaart</p>
-                </div>
+               <div id="idUploadField" style="display: none;">
+                   <label class="block mb-1 font-medium">Identiteitskaart foto (verplicht voor dagverhuur)</label>
+                   <input 
+                       type="file" 
+                       name="idCard" 
+                       id="idCard"
+                       accept="image/*"
+                       class="w-full p-2 border rounded"
+                   />
+                   <p class="text-sm text-gray-500 mt-1">Upload een duidelijke foto van uw identiteitskaart</p>
+               </div>
 
-                <div class="flex gap-4 mt-8">
-                    <button id="submitBtn" type="submit" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-                        Reserveer
-                    </button>
-                    <button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300">
-                        Annuleer
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+               <div class="flex gap-4 mt-8">
+                   <button id="submitBtn" type="submit" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                       Reserveer
+                   </button>
+                   <button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300">
+                       Annuleer
+                   </button>
+               </div>
+           </form>
+       </div>
+   </div>
 
-    <!-- Confirmation Modal -->
-    <div id="confirmationModal" class="modal">
-        <div class="bg-white rounded-xl p-8 max-w-md w-full m-auto text-center">
-            <h2 class="text-2xl font-bold mb-4">Bedankt voor uw reservering!</h2>
-            <p class="text-gray-600">U ontvangt binnen enkele minuten een bevestigingsmail.</p>
-            <button onclick="closeModal()" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                Sluiten
-            </button>
-        </div>
-    </div>
+   <!-- Confirmation Modal -->
+   <div id="confirmationModal" class="modal">
+       <div class="bg-white rounded-xl p-8 max-w-md w-full m-auto text-center">
+           <h2 class="text-2xl font-bold mb-4">Bedankt voor uw reservering!</h2>
+           <p class="text-gray-600">U ontvangt binnen enkele minuten een bevestigingsmail.</p>
+           <button onclick="closeModal()" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+               Sluiten
+           </button>
+       </div>
+   </div>
 
-    <script>
-        // Supabase setup
-        const supabaseUrl = 'https://sewiqddhfdknaaapvqbl.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNld2lxZGRoZmRrbmFhYXB2cWJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU5NzA1OTQsImV4cCI6MjA1MTU0NjU5NH0.1Z0Hxex_kWc9MuGWiHn1hlB1ybip0IALbhoJMbOjum8';
-        const supabase = supabaseClient.createClient(supabaseUrl, supabaseKey);
+   <script>
+       // Supabase setup
+       const supabaseUrl = 'https://sewiqddhfdknaaapvqbl.supabase.co';
+       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNld2lxZGRoZmRrbmFhYXB2cWJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU5NzA1OTQsImV4cCI6MjA1MTU0NjU5NH0.1Z0Hxex_kWc9MuGWiHn1hlB1ybip0IALbhoJMbOjum8';
+       const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Booking handlers
-        let activeCabinId = null;
+       // Modal handlers
+       function openBooking(cabinId) {
+           console.log('Opening booking for cabin:', cabinId);
+           const modal = document.getElementById('bookingModal');
+           modal.classList.add('active');
+           document.getElementById('modalTitle').textContent = `Reserveer Strandcabine ${cabinId}`;
+       }
 
-        function openBooking(cabinId) {
-            activeCabinId = cabinId;
-            document.getElementById('modalTitle').textContent = `Reserveer Strandcabine ${cabinId}`;
-            document.getElementById('bookingModal').classList.add('active');
-        }
+       function closeModal() {
+           document.getElementById('bookingModal').classList.remove('active');
+           document.getElementById('confirmationModal').classList.remove('active');
+           document.getElementById('bookingForm').reset();
+           document.getElementById('idUploadField').style.display = 'none';
+       }
 
-        function closeModal() {
-            document.getElementById('bookingModal').classList.remove('active');
-            document.getElementById('confirmationModal').classList.remove('active');
-            activeCabinId = null;
-            // Reset form
-            document.getElementById('bookingForm').reset();
-            document.getElementById('idUploadField').style.display = 'none';
-        }
+       function toggleIdUpload(period) {
+           const idUploadField = document.getElementById('idUploadField');
+           idUploadField.style.display = period === 'day' ? 'block' : 'none';
+       }
 
-        async function handleBooking(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const period = formData.get('period');
-            
-            // Disable form during submission
-            form.classList.add('form-loading');
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Bezig met reserveren...';
+       async function handleBooking(event) {
+           event.preventDefault();
+           const form = event.target;
+           const formData = new FormData(form);
+           const period = formData.get('period');
+           
+           form.classList.add('form-loading');
+           const submitBtn = document.getElementById('submitBtn');
+           submitBtn.disabled = true;
+           submitBtn.textContent = 'Bezig met reserveren...';
 
-            try {
-                // Check if ID upload is required
-                if (period === 'day') {
-                    const idFile = document.getElementById('idCard').files[0];
-                    if (!idFile) {
-                        alert('Voor dagverhuur is een foto van uw identiteitskaart verplicht.');
-                        return;
-                    }
+           try {
+               if (period === 'day') {
+                   const idFile = document.getElementById('idCard').files[0];
+                   if (!idFile) {
+                       alert('Voor dagverhuur is een foto van uw identiteitskaart verplicht.');
+                       return;
+                   }
 
-                    // Upload ID to Supabase Storage
-                    const timestamp = new Date().getTime();
-                    const fileName = `id-${timestamp}-${idFile.name}`;
-                    const { data, error } = await supabase.storage
-                        .from('id-documents')
-                        .upload(fileName, idFile, {
-                            cacheControl: '3600',
-                            upsert: false
-                        });
+                   const timestamp = new Date().getTime();
+                   const fileName = `id-${timestamp}-${idFile.name}`;
+                   const { data, error } = await supabase.storage
+                       .from('id-documents')
+                       .upload(fileName, idFile);
 
-                    if (error) throw error;
+                   if (error) throw error;
+                   console.log('ID document uploaded:', data);
+                   formData.append('idDocument', fileName);
+               }
 
-                    // Add file reference to booking data
-                    formData.append('idDocument', fileName);
-                }
+               // Log booking data
+               console.log('Booking data:', Object.fromEntries(formData));
 
-                // Here you would normally send the booking data to your backend
-                console.log('Booking data:', Object.fromEntries(formData));
+               // Show confirmation
+               document.getElementById('bookingModal').classList.remove('active');
+               document.getElementById('confirmationModal').classList.add('active');
+               form.reset();
 
-                // Show confirmation
-                document.getElementById('bookingModal').classList.remove('active');
-                document.getElementById('confirmationModal').classList.add('active');
-                form.reset();
+           } catch (error) {
+               console.error('Error:', error);
+               alert('Er ging iets mis. Probeer het opnieuw.');
+           } finally {
+               form.classList.remove('form-loading');
+               submitBtn.disabled = false;
+               submitBtn.textContent = 'Reserveer';
+           }
+       }
 
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Er ging iets mis. Probeer het opnieuw.');
-            } finally {
-                // Re-enable form
-                form.classList.remove('form-loading');
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Reserveer';
-            }
-        }
-
-        // Show/hide ID upload field based on selected period
-        document.querySelector('select[name="period"]').addEventListener('change', function(e) {
-            const idUploadField = document.getElementById('idUploadField');
-            idUploadField.style.display = e.target.value === 'day' ? 'block' : 'none';
-        });
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeModal();
-            }
-        }
-    </script>
+       // Close modals when clicking outside
+       window.onclick = function(event) {
+           if (event.target.classList.contains('modal')) {
+               closeModal();
+           }
+       }
+   </script>
 </body>
 </html>
