@@ -52,18 +52,19 @@
                    <div class="mb-6">
                        <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
                        <div class="space-y-2 text-gray-600">
-                           <p>Per dag: €50</p>
-                           <p>Per 2 weken: €200</p>
+                           <p>Per dag: €51</p>
+                           <p>Per week: €105</p>
+                           <p>Per 2 weken: €205</p>
                            <div class="mt-2">
                                <p class="font-medium">Per maand:</p>
                                <ul class="ml-4 space-y-1">
-                                   <li>April: €350</li>
-                                   <li>Mei: €400</li>
-                                   <li>Juni-Augustus: €500</li>
-                                   <li>September: €350</li>
+                                   <li>April: €355</li>
+                                   <li>Mei: €410</li>
+                                   <li>Juni-Augustus: €510</li>
+                                   <li>September: €355</li>
                                </ul>
                            </div>
-                           <p class="mt-2 font-medium">Heel seizoen: €1800</p>
+                           <p class="mt-2 font-medium">Heel seizoen: €1825</p>
                        </div>
                    </div>
                    <button onclick="openBooking(1)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
@@ -90,18 +91,19 @@
                    <div class="mb-6">
                        <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
                        <div class="space-y-2 text-gray-600">
-                           <p>Per dag: €50</p>
-                           <p>Per 2 weken: €200</p>
+                           <p>Per dag: €51</p>
+                           <p>Per week: €105</p>
+                           <p>Per 2 weken: €205</p>
                            <div class="mt-2">
                                <p class="font-medium">Per maand:</p>
                                <ul class="ml-4 space-y-1">
-                                   <li>April: €350</li>
-                                   <li>Mei: €400</li>
-                                   <li>Juni-Augustus: €500</li>
-                                   <li>September: €350</li>
+                                   <li>April: €355</li>
+                                   <li>Mei: €410</li>
+                                   <li>Juni-Augustus: €510</li>
+                                   <li>September: €355</li>
                                </ul>
                            </div>
-                           <p class="mt-2 font-medium">Heel seizoen: €1800</p>
+                           <p class="mt-2 font-medium">Heel seizoen: €1825</p>
                        </div>
                    </div>
                    <button onclick="openBooking(2)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
@@ -111,8 +113,33 @@
            </div>
        </div>
 
-       <!-- Beveiliging en Privacy -->
+       <!-- Betalingsinformatie -->
        <div class="mt-12 bg-white rounded-xl shadow-lg p-6">
+           <h2 class="text-2xl font-bold text-blue-900 mb-4">Betalingsinformatie</h2>
+           <div class="text-gray-600">
+               <p class="mb-4">Het reserverings- en betalingsproces verloopt als volgt:</p>
+               <ol class="list-decimal list-inside space-y-2 mb-6">
+                   <li>U vult het reserveringsformulier in en uploadt uw ID</li>
+                   <li>U wordt doorverwezen naar onze veilige betaalomgeving</li>
+                   <li>Na betaling is uw reservering direct bevestigd</li>
+                   <li>U ontvangt een bevestigingsmail met alle details</li>
+               </ol>
+               
+               <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                   <h3 class="font-semibold text-yellow-800 mb-2">Belangrijk:</h3>
+                   <ul class="list-disc list-inside space-y-1">
+                       <li>Alle betalingen verlopen veilig via Stripe</li>
+                       <li>U kunt betalen met creditcard, Bancontact of iDEAL</li>
+                       <li>Een borg van €100 is vereist (contant bij sleuteloverdracht)</li>
+                       <li>Bij annulering tot 30 dagen voor aankomst krijgt u het volledige bedrag terug</li>
+                       <li>Bij annulering binnen 30 dagen voor aankomst wordt 50% in rekening gebracht</li>
+                   </ul>
+               </div>
+           </div>
+       </div>
+
+       <!-- Beveiliging en Privacy -->
+       <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
            <h2 class="text-2xl font-bold text-blue-900 mb-4">Beveiliging & Privacy</h2>
            <div class="text-gray-600">
                <p class="mb-2">Voor uw en onze veiligheid vragen wij om een kopie van uw identiteitskaart bij elke reservering.</p>
@@ -121,7 +148,8 @@
                    <li>Uw ID wordt alleen gebruikt voor identiteitsverificatie</li>
                    <li><strong class="text-blue-800">Uw ID-kopie wordt uitsluitend bewaard gedurende uw huurperiode plus 2 dagen, waarna deze permanent wordt verwijderd</strong></li>
                    <li>Uw ID-kopie wordt veilig opgeslagen in een beveiligde Google Drive map met tweefactorauthenticatie</li>
-                   <li>Toegang tot deze gegevens is beperkt tot alleen de beheerder van de strandcabines</li>
+                   <li>Betalingsgegevens worden verwerkt door Stripe, een gecertificeerde en veilige betalingsverwerker</li>
+                   <li>Wij hebben geen toegang tot uw volledige kaartgegevens</li>
                    <li>Uw gegevens worden niet gedeeld met derden</li>
                </ul>
                <p class="text-sm italic">Voor vragen over hoe wij omgaan met uw persoonsgegevens, kunt u altijd contact met ons opnemen.</p>
@@ -136,8 +164,8 @@
                    <h3 class="font-semibold text-blue-800 mb-2">Contacteer ons</h3>
                    <p class="text-gray-600">Voor meer informatie of vragen, neem gerust contact met ons op:</p>
                    <ul class="mt-2 space-y-1 text-gray-600">
-                       <li>Telefoon: <a href="tel:+32XXXXXXXXX" class="text-blue-600 hover:underline">+32 XX XX XX XX</a></li>
-                       <li>E-mail: <a href="mailto:voorbeeld@email.com" class="text-blue-600 hover:underline">voorbeeld@email.com</a></li>
+                       <li>Telefoon: <a href="tel:+32474662781" class="text-blue-600 hover:underline">+32 474 662781</a></li>
+                       <li>E-mail: <a href="mailto:gregoirefauvarque@hotmail.be" class="text-blue-600 hover:underline">gregoirefauvarque@hotmail.be</a></li>
                    </ul>
                </div>
                <div class="flex-1">
@@ -173,10 +201,14 @@
                <div>
                    <label class="block mb-1 font-medium">Periode</label>
                    <select name="period" required class="w-full p-2 border rounded" id="periodSelect">
-                       <option value="day">Per dag (€50)</option>
-                       <option value="twoWeeks">2 weken (€200)</option>
-                       <option value="month">Per maand (vanaf €350)</option>
-                       <option value="season">Heel seizoen (€1800)</option>
+                       <option value="day">Per dag (€51)</option>
+                       <option value="week">Per week (€105)</option>
+                       <option value="twoWeeks">2 weken (€205)</option>
+                       <option value="monthApril">April (€355)</option>
+                       <option value="monthMay">Mei (€410)</option>
+                       <option value="monthSummer">Juni-Augustus (€510)</option>
+                       <option value="monthSeptember">September (€355)</option>
+                       <option value="season">Heel seizoen (€1825)</option>
                    </select>
                </div>
 
@@ -198,8 +230,12 @@
                </div>
                
                <div class="p-4 bg-blue-50 rounded border mt-2">
-                   <p class="font-medium text-blue-800">Belangrijk:</p>
-                   <p class="text-gray-600">Na het indienen van dit formulier wordt u doorverwezen naar een pagina om uw identiteitskaart te uploaden voor verificatie. Dit is vereist om uw reservering te voltooien.</p>
+                   <p class="font-medium text-blue-800">Volgende stappen:</p>
+                   <p class="text-gray-600">Na het indienen van dit formulier wordt u doorverwezen naar:</p>
+                   <ol class="list-decimal list-inside text-sm text-gray-600 mt-2">
+                       <li>Een beveiligde pagina om uw ID te uploaden</li>
+                       <li>Een beveiligde betaalpagina om direct de reservering te voltooien</li>
+                   </ol>
                </div>
                
                <div class="mt-4">
@@ -235,11 +271,83 @@
                Upload uw ID via Google Forms
            </a>
            
-           <p class="text-sm text-gray-500 mt-4">Na het uploaden van uw ID via Google Forms, klik op de onderstaande knop om het proces te voltooien.</p>
+           <p class="text-sm text-gray-500 mt-4">Na het uploaden van uw ID via Google Forms, klik op de onderstaande knop om naar de betaalpagina te gaan.</p>
+           
+           <div class="flex gap-4 mt-6">
+               <button type="button" onclick="showPaymentOptions()" class="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                   ID Geüpload, Ga naar Betaling
+               </button>
+               <button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300">
+                   Annuleer
+               </button>
+           </div>
+       </div>
+   </div>
+   
+   <!-- Payment Modal -->
+   <div id="paymentModal" class="modal">
+       <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
+           <h2 class="text-2xl font-bold mb-6">Betaling</h2>
+           
+           <div class="text-gray-600 mb-6">
+               <p>Selecteer de betaallink die overeenkomt met uw reservering:</p>
+           </div>
+           
+           <div class="space-y-4">
+               <div id="payment-day" class="hidden">
+                   <a href="https://buy.stripe.com/6oE4gz0eJ6zbfHq7ss" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor Dagverhuur (€51)
+                   </a>
+               </div>
+               
+               <div id="payment-week" class="hidden">
+                   <a href="https://buy.stripe.com/00g3cv3qVbTv2UE289" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor Week verhuur (€105)
+                   </a>
+               </div>
+               
+               <div id="payment-twoWeeks" class="hidden">
+                   <a href="https://buy.stripe.com/6oE28r0eJ4r3cvefZ0" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor 2 Weken (€205)
+                   </a>
+               </div>
+               
+               <div id="payment-monthApril" class="hidden">
+                   <a href="https://buy.stripe.com/5kA8wPe5z8Hj7aU5kn" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor April (€355)
+                   </a>
+               </div>
+               
+               <div id="payment-monthMay" class="hidden">
+                   <a href="https://buy.stripe.com/28o5kDaTng9L7aUfZ2" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor Mei (€410)
+                   </a>
+               </div>
+               
+               <div id="payment-monthSummer" class="hidden">
+                   <a href="https://buy.stripe.com/5kA9ATd1v9LneDm28d" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor Juni-Augustus (€510)
+                   </a>
+               </div>
+               
+               <div id="payment-monthSeptember" class="hidden">
+                   <a href="https://buy.stripe.com/3cs4gz3qV6zbdzi5kr" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor September (€355)
+                   </a>
+               </div>
+               
+               <div id="payment-season" class="hidden">
+                   <a href="https://buy.stripe.com/eVadR9aTn7DfeDm4gm" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor Heel Seizoen (€1825)
+                   </a>
+               </div>
+           </div>
+           
+           <p class="text-sm text-gray-500 mt-4">Na betaling wordt u automatisch teruggestuurd naar deze website voor bevestiging.</p>
            
            <div class="flex gap-4 mt-6">
                <button type="button" onclick="showConfirmation()" class="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
-                   ID Geüpload via Google Forms
+                   Betaling Voltooid
                </button>
                <button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300">
                    Annuleer
@@ -252,7 +360,7 @@
    <div id="confirmationModal" class="modal">
        <div class="bg-white rounded-xl p-8 max-w-md w-full m-auto text-center">
            <h2 class="text-2xl font-bold mb-4">Bedankt voor uw reservering!</h2>
-           <p class="text-gray-600 mb-4">We hebben uw reserveringsaanvraag en ID ontvangen. We nemen binnen 24 uur contact met u op om de reservering te bevestigen.</p>
+           <p class="text-gray-600 mb-4">Uw reservering en betaling zijn succesvol verwerkt. U ontvangt binnen enkele minuten een bevestigingsmail met alle details.</p>
            <p class="text-sm text-blue-800 mt-4">Uw ID-kopie wordt veilig bewaard en automatisch verwijderd na uw huurperiode + 2 dagen.</p>
            <button onclick="closeAllModals()" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                Sluiten
@@ -281,6 +389,7 @@
        function closeModal() {
            document.getElementById('bookingModal').classList.remove('active');
            document.getElementById('idUploadModal').classList.remove('active');
+           document.getElementById('paymentModal').classList.remove('active');
            document.getElementById('confirmationModal').classList.remove('active');
            const form = document.getElementById('bookingForm');
            if (form) form.reset();
@@ -289,6 +398,7 @@
        function closeAllModals() {
            document.getElementById('bookingModal').classList.remove('active');
            document.getElementById('idUploadModal').classList.remove('active');
+           document.getElementById('paymentModal').classList.remove('active');
            document.getElementById('confirmationModal').classList.remove('active');
            const form = document.getElementById('bookingForm');
            if (form) form.reset();
@@ -300,8 +410,26 @@
            document.getElementById('idUploadModal').classList.add('active');
        }
        
-       function showConfirmation() {
+       function showPaymentOptions() {
            document.getElementById('idUploadModal').classList.remove('active');
+           document.getElementById('paymentModal').classList.add('active');
+           
+           // Hide all payment options first
+           document.querySelectorAll('#paymentModal [id^="payment-"]').forEach(el => {
+               el.classList.add('hidden');
+           });
+           
+           // Show the relevant payment option based on period
+           if (formData.period) {
+               const paymentDiv = document.getElementById(`payment-${formData.period}`);
+               if (paymentDiv) {
+                   paymentDiv.classList.remove('hidden');
+               }
+           }
+       }
+       
+       function showConfirmation() {
+           document.getElementById('paymentModal').classList.remove('active');
            document.getElementById('confirmationModal').classList.add('active');
        }
 
