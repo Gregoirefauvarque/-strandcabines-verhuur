@@ -120,7 +120,7 @@
                <ul class="list-disc list-inside space-y-1 mb-4">
                    <li>Uw ID wordt alleen gebruikt voor identiteitsverificatie</li>
                    <li><strong class="text-blue-800">Uw ID-kopie wordt uitsluitend bewaard gedurende uw huurperiode plus 2 dagen, waarna deze permanent wordt verwijderd</strong></li>
-                   <li>Uw ID-kopie wordt veilig opgeslagen in een beveiligde map in Microsoft OneDrive met tweefactorauthenticatie</li>
+                   <li>Uw ID-kopie wordt veilig opgeslagen in een beveiligde Google Drive map met tweefactorauthenticatie</li>
                    <li>Toegang tot deze gegevens is beperkt tot alleen de beheerder van de strandcabines</li>
                    <li>Uw gegevens worden niet gedeeld met derden</li>
                </ul>
@@ -153,7 +153,7 @@
        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
            <h2 id="modalTitle" class="text-2xl font-bold mb-6">Reserveer Strandcabine</h2>
            
-           <form id="bookingForm" action="https://formspree.io/f/xnnpnjjr" method="POST" enctype="multipart/form-data" class="space-y-4">
+           <form id="bookingForm" action="https://formspree.io/f/xnnpnjjr" method="POST" class="space-y-4">
                <input type="hidden" id="cabinId" name="cabinId">
                <div>
                    <label class="block mb-1 font-medium">Naam</label>
@@ -172,7 +172,7 @@
 
                <div>
                    <label class="block mb-1 font-medium">Periode</label>
-                   <select name="period" required class="w-full p-2 border rounded">
+                   <select name="period" required class="w-full p-2 border rounded" id="periodSelect">
                        <option value="day">Per dag (€50)</option>
                        <option value="twoWeeks">2 weken (€200)</option>
                        <option value="month">Per maand (vanaf €350)</option>
@@ -193,27 +193,19 @@
                </div>
 
                <div>
-                   <label class="block mb-1 font-medium text-red-600">Identiteitskaart (verplicht)</label>
-                   <input 
-                       type="file" 
-                       name="idCard" 
-                       required
-                       accept="image/*,.pdf"
-                       class="w-full p-2 border rounded"
-                   />
-                   <p class="text-sm text-gray-500 mt-1">Upload een duidelijke foto of scan van uw identiteitskaart (voor- en achterkant)</p>
-                   <p class="text-sm font-medium text-blue-800 mt-1">Deze kopie wordt alleen bewaard tijdens uw huurperiode + 2 dagen, daarna verwijderd.</p>
-               </div>
-
-               <div>
                    <label class="block mb-1 font-medium">Bericht (optioneel)</label>
                    <textarea name="message" class="w-full p-2 border rounded" rows="3"></textarea>
                </div>
-
+               
+               <div class="p-4 bg-blue-50 rounded border mt-2">
+                   <p class="font-medium text-blue-800">Belangrijk:</p>
+                   <p class="text-gray-600">Na het indienen van dit formulier wordt u doorverwezen naar een pagina om uw identiteitskaart te uploaden voor verificatie. Dit is vereist om uw reservering te voltooien.</p>
+               </div>
+               
                <div class="mt-4">
                    <label class="flex items-start">
-                       <input type="checkbox" required name="privacy_consent" class="mt-1 mr-2">
-                       <span class="text-sm text-gray-600">Ik ga akkoord met de verwerking van mijn persoonsgegevens zoals beschreven in de privacyverklaring, inclusief de tijdelijke opslag van mijn ID-kopie gedurende de huurperiode plus 2 dagen.*</span>
+                       <input type="checkbox" required name="terms_consent" class="mt-1 mr-2">
+                       <span class="text-sm text-gray-600">Ik ga akkoord met de huurvoorwaarden en privacy beleid.*</span>
                    </label>
                </div>
 
@@ -229,13 +221,40 @@
        </div>
    </div>
 
+   <!-- ID Upload Modal -->
+   <div id="idUploadModal" class="modal">
+       <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
+           <h2 class="text-2xl font-bold mb-6">Upload uw identiteitskaart</h2>
+           
+           <div class="text-gray-600 mb-6">
+               <p>Uw reservering is bijna voltooid! Om het proces af te ronden, dient u uw identiteitskaart te uploaden via ons beveiligde formulier.</p>
+               <p class="mt-2 text-sm font-medium text-blue-800">Deze kopie wordt uitsluitend bewaard gedurende uw huurperiode plus 2 dagen, waarna deze permanent wordt verwijderd.</p>
+           </div>
+           
+           <a href="https://docs.google.com/forms/d/e/1FAIpQLSdY_-rAZzOolLgfscXgCmKEuNLDrHlj2bmuWurnw92NJk6MNQ/viewform?usp=header" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+               Upload uw ID via Google Forms
+           </a>
+           
+           <p class="text-sm text-gray-500 mt-4">Na het uploaden van uw ID via Google Forms, klik op de onderstaande knop om het proces te voltooien.</p>
+           
+           <div class="flex gap-4 mt-6">
+               <button type="button" onclick="showConfirmation()" class="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                   ID Geüpload via Google Forms
+               </button>
+               <button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300">
+                   Annuleer
+               </button>
+           </div>
+       </div>
+   </div>
+
    <!-- Confirmation Modal -->
    <div id="confirmationModal" class="modal">
        <div class="bg-white rounded-xl p-8 max-w-md w-full m-auto text-center">
            <h2 class="text-2xl font-bold mb-4">Bedankt voor uw reservering!</h2>
-           <p class="text-gray-600 mb-4">We hebben uw reserveringsaanvraag ontvangen en nemen binnen 24 uur contact met u op.</p>
-           <p class="text-sm text-blue-800">Uw identiteitskaart wordt veilig bewaard en automatisch verwijderd na uw huurperiode + 2 dagen.</p>
-           <button onclick="closeModal()" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+           <p class="text-gray-600 mb-4">We hebben uw reserveringsaanvraag en ID ontvangen. We nemen binnen 24 uur contact met u op om de reservering te bevestigen.</p>
+           <p class="text-sm text-blue-800 mt-4">Uw ID-kopie wordt veilig bewaard en automatisch verwijderd na uw huurperiode + 2 dagen.</p>
+           <button onclick="closeAllModals()" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                Sluiten
            </button>
        </div>
@@ -249,6 +268,7 @@
 
    <script>
        let activeCabinId = null;
+       let formData = {};
 
        function openBooking(cabinId) {
            activeCabinId = cabinId;
@@ -260,14 +280,37 @@
 
        function closeModal() {
            document.getElementById('bookingModal').classList.remove('active');
+           document.getElementById('idUploadModal').classList.remove('active');
            document.getElementById('confirmationModal').classList.remove('active');
            const form = document.getElementById('bookingForm');
            if (form) form.reset();
        }
+       
+       function closeAllModals() {
+           document.getElementById('bookingModal').classList.remove('active');
+           document.getElementById('idUploadModal').classList.remove('active');
+           document.getElementById('confirmationModal').classList.remove('active');
+           const form = document.getElementById('bookingForm');
+           if (form) form.reset();
+           formData = {};
+       }
+       
+       function showIdUploadModal() {
+           document.getElementById('bookingModal').classList.remove('active');
+           document.getElementById('idUploadModal').classList.add('active');
+       }
+       
+       function showConfirmation() {
+           document.getElementById('idUploadModal').classList.remove('active');
+           document.getElementById('confirmationModal').classList.add('active');
+       }
 
        // Handle form submission with Formspree
        document.getElementById('bookingForm').addEventListener('submit', function(event) {
-           // Let the default form submission happen, but show loading state
+           // Prevent default form submission to handle it ourselves
+           event.preventDefault();
+           
+           // Show loading state
            const form = this;
            form.classList.add('form-loading');
            
@@ -275,15 +318,39 @@
            submitBtn.disabled = true;
            submitBtn.textContent = 'Bezig met verzenden...';
            
-           // We'll show a confirmation after submission
-           setTimeout(function() {
-               document.getElementById('bookingModal').classList.remove('active');
-               document.getElementById('confirmationModal').classList.add('active');
-               form.reset();
+           // Store form data
+           const formDataObj = new FormData(form);
+           formData = {};
+           for (let [key, value] of formDataObj.entries()) {
+               formData[key] = value;
+           }
+           
+           // Submit form to Formspree
+           fetch(form.action, {
+               method: form.method,
+               body: formDataObj,
+               headers: {
+                   'Accept': 'application/json'
+               }
+           })
+           .then(response => {
+               if (response.ok) {
+                   // Show ID upload modal after successful form submission
+                   showIdUploadModal();
+               } else {
+                   // Handle error
+                   alert('Er ging iets mis. Probeer het later opnieuw of neem contact met ons op.');
+               }
+           })
+           .catch(error => {
+               console.error('Error:', error);
+               alert('Er ging iets mis. Probeer het later opnieuw of neem contact met ons op.');
+           })
+           .finally(() => {
                form.classList.remove('form-loading');
                submitBtn.disabled = false;
                submitBtn.textContent = 'Reserveer';
-           }, 1000);
+           });
        });
 
        // Close modals when clicking outside
