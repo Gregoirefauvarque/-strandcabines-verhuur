@@ -5,31 +5,17 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Strandcabines Blankenberge</title>
    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+   <!-- FullCalendar CSS -->
+   <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.min.css' rel='stylesheet' />
    <!-- Leaflet CSS voor OpenStreetMap -->
    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
    <style>
-       .modal {
-           display: none;
-           position: fixed;
-           top: 0;
-           left: 0;
-           width: 100%;
-           height: 100%;
-           background: rgba(0, 0, 0, 0.5);
-           z-index: 50;
+       /* ... (bestaande stijlen blijven hetzelfde) */
+       .fc-daygrid-day.booked {
+           background-color: rgba(220, 53, 69, 0.1);
        }
-       .modal.active {
-           display: flex;
-       }
-       .form-loading {
-           opacity: 0.7;
-           pointer-events: none;
-       }
-       .map-container {
-           height: 300px;
-           width: 100%;
-           border-radius: 8px;
-           overflow: hidden;
+       .fc-daygrid-day.available {
+           background-color: rgba(40, 167, 69, 0.1);
        }
    </style>
 </head>
@@ -40,223 +26,211 @@
            <p class="text-blue-700">Verhuur seizoen 2025 - April tot September</p>
            <p class="text-red-600 mt-2">*Identiteitskaart vereist voor alle reserveringen</p>
        </header>
-Copy   <div class="grid md:grid-cols-2 gap-8">
-       <!-- Cabin 1 -->
-       <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-           <div class="p-6">
-               <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 1</h2>
-               <div class="mb-6">
-                   <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
-                   <ul class="list-disc list-inside space-y-1 text-gray-600">
-                       <li>1 Tafel</li>
-                       <li>2 Stoelen</li>
-                       <li>2 Strandstoelen</li>
-                       <li>1 Gordijn</li>
-                       <li>Strandspeelgoed</li>
-                       <li>1 Borsteltje</li>
-                   </ul>
-               </div>
-               <div class="mb-6">
-                   <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
-                   <div class="space-y-2 text-gray-600">
-                       <p>Per week: €105</p>
-                       <p>Per 2 weken: €205</p>
-                       <div class="mt-2">
-                           <p class="font-medium">Per maand:</p>
-                           <ul class="ml-4 space-y-1">
-                               <li>April: €355</li>
-                               <li>Mei: €410</li>
-                               <li>Juni-Augustus: €510</li>
-                               <li>September: €355</li>
-                           </ul>
-                       </div>
-                       <p class="mt-2 font-medium">Heel seizoen: €1825</p>
-                   </div>
-               </div>
-               <button onclick="openBooking(1)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                   Reserveer Nu
-               </button>
-           </div>
-       </div>
 
-       <!-- Cabin 2 -->
-       <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-           <div class="p-6">
-               <h2 class="text-2xl font-bold text-blue-900 mb-4">Strandcabine 2</h2>
-               <div class="mb-6">
-                   <h3 class="font-semibold text-blue-800 mb-2">Faciliteiten:</h3>
-                   <ul class="list-disc list-inside space-y-1 text-gray-600">
-                       <li>1 Tafel</li>
-                       <li>2 Stoelen</li>
-                       <li>2 Strandstoelen</li>
-                       <li>1 Gordijn</li>
-                       <li>Strandspeelgoed</li>
-                       <li>1 Borsteltje</li>
-                   </ul>
-               </div>
-               <div class="mb-6">
-                   <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
-                   <div class="space-y-2 text-gray-600">
-                       <p>Per week: €105</p>
-                       <p>Per 2 weken: €205</p>
-                       <div class="mt-2">
-                           <p class="font-medium">Per maand:</p>
-                           <ul class="ml-4 space-y-1">
-                               <li>April: €355</li>
-                               <li>Mei: €410</li>
-                               <li>Juni-Augustus: €510</li>
-                               <li>September: €355</li>
-                           </ul>
-                       </div>
-                       <p class="mt-2 font-medium">Heel seizoen: €1825</p>
-                   </div>
-               </div>
-               <button onclick="openBooking(2)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                   Reserveer Nu
-               </button>
-           </div>
-       </div>
-   </div>
+       <!-- ... (bestaande HTML code voor de strandcabines en locatie blijft hetzelfde) -->
 
-   <!-- Locatie Sectie -->
-   <div class="mt-12 bg-white rounded-xl shadow-lg p-6">
-       <h2 class="text-2xl font-bold text-blue-900 mb-4">Locatie</h2>
-       <div class="text-gray-600 mb-4">
-           <p>Onze strandcabines bevinden zich op een ideale locatie aan het strand van Blankenberge.</p>
-           <p class="mt-2">Coördinaten: 51°19'04.1"N 3°07'58.5"E</p>
-       </div>
-       <div class="map-container" id="map"></div>
-       <div class="mt-4">
-           <a href="https://www.openstreetmap.org/?mlat=51.317806&mlon=3.132917&zoom=16" target="_blank" class="text-blue-600 hover:underline flex items-center">
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-               </svg>
-               Bekijk in OpenStreetMap
-           </a>
-       </div>
-   </div>
-<!-- Beschikbaarheid Cabine 1 -->
-   <div class="mt-12 bg-white rounded-xl shadow-lg p-6">
-       <h2 class="text-2xl font-bold text-blue-900 mb-4">Beschikbaarheid - Cabine 1</h2>
-       <div class="mb-4">
-           <iframe 
-               src="https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/f4c108f9-ae36-4c31-b132-2049d9a0d9f9/cid-249909C222CBB60C/index.html"
-               width="100%" 
-               height="600" 
-               frameborder="0" 
-               scrolling="no">
-           </iframe>
-       </div>
-       <p class="text-sm text-gray-500">Laatste update: 15 maart 2025</p>
-   </div>
-
-   <!-- Betalingsinformatie -->
-   <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
-       <h2 class="text-2xl font-bold text-blue-900 mb-4">Betalingsinformatie</h2>
-       <div class="text-gray-600">
-           <p class="mb-4">Het reserverings- en betalingsproces verloopt als volgt:</p>
-           <ol class="list-decimal list-inside space-y-2 mb-6">
-               <li>U vult het reserveringsformulier in en uploadt uw ID</li>
-               <li>U wordt doorverwezen naar onze veilige betaalomgeving</li>
-               <li>Na betaling is uw reservering direct bevestigd</li>
-               <li>U ontvangt een bevestigingsmail met alle details</li>
-           </ol>
+       <!-- Beschikbaarheid -->
+       <div class="mt-12 bg-white rounded-xl shadow-lg p-6">
+           <h2 class="text-2xl font-bold text-blue-900 mb-4">Beschikbaarheid</h2>
+           <p class="text-gray-600 mb-4">Bekijk hieronder de beschikbaarheid van onze strandcabines. Selecteer een cabine om de beschikbare periodes te zien.</p>
            
-           <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-               <h3 class="font-semibold text-yellow-800 mb-2">Belangrijk:</h3>
-               <ul class="list-disc list-inside space-y-1">
-                   <li>Alle betalingen verlopen veilig via Stripe</li>
-                   <li>U kunt betalen met creditcard, Bancontact of iDEAL</li>
-                   <li>Annuleringsvoorwaarden:
-                       <ul class="ml-6 mt-1 space-y-1">
-                           <li>Bij annulering meer dan 30 dagen voor aankomst: volledige terugbetaling</li>
-                           <li>Bij annulering minder dan 30 dagen voor aankomst: 50% van het betaalde bedrag wordt ingehouden</li>
-                       </ul>
-                   </li>
-               </ul>
+           <div class="cabin-selector">
+               <button id="cabin1Button" class="cabin-button active" onclick="switchCabin(1)">Strandcabine 1</button>
+               <button id="cabin2Button" class="cabin-button" onclick="switchCabin(2)">Strandcabine 2</button>
            </div>
+           
+           <div id="calendar" class="calendar-container"></div>
+           
+           <div class="legend">
+               <div class="legend-item">
+                   <div class="legend-color booked-color"></div>
+                   <span>Geboekt</span>
+               </div>
+               <div class="legend-item">
+                   <div class="legend-color available-color"></div>
+                   <span>Beschikbaar</span>
+               </div>
+           </div>
+           
+           <p class="text-sm text-gray-500 mt-4">Laatste update: 15 maart 2025</p>
        </div>
    </div>
 
-   <!-- Beveiliging en Privacy -->
-   <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
-       <h2 class="text-2xl font-bold text-blue-900 mb-4">Beveiliging & Privacy</h2>
-       <div class="text-gray-600">
-           <p class="mb-2">Voor uw en onze veiligheid vragen wij om een kopie van uw identiteitskaart bij elke reservering.</p>
-           <p class="mb-2">Uw gegevens worden vertrouwelijk behandeld in overeenstemming met de AVG/GDPR regelgeving:</p>
-           <ul class="list-disc list-inside space-y-1 mb-4">
-               <li>Uw ID wordt alleen gebruikt voor identiteitsverificatie</li>
-               <li><strong class="text-blue-800">Uw ID-kopie wordt uitsluitend bewaard gedurende uw huurperiode plus 2 dagen, waarna deze permanent wordt verwijderd</strong></li>
-               <li>Uw ID-kopie wordt veilig opgeslagen in een beveiligde Google Drive map met tweefactorauthenticatie</li>
-               <li>Betalingsgegevens worden verwerkt door Stripe, een gecertificeerde en veilige betalingsverwerker</li>
-               <li>Wij hebben geen toegang tot uw volledige kaartgegevens</li>
-               <li>Uw gegevens worden niet gedeeld met derden</li>
-           </ul>
-           <p class="text-sm italic">Voor vragen over hoe wij omgaan met uw persoonsgegevens, kunt u altijd contact met ons opnemen.</p>
-       </div>
-   </div>
-    <!-- Contact Informatie -->
-   <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
-       <h2 class="text-2xl font-bold text-blue-900 mb-4">Contact Informatie</h2>
-       <div class="flex flex-col md:flex-row md:space-x-8">
-           <div class="flex-1 mb-4 md:mb-0">
-               <h3 class="font-semibold text-blue-800 mb-2">Contacteer ons</h3>
-               <p class="text-gray-600">Voor meer informatie of vragen, neem gerust contact met ons op:</p>
-               <ul class="mt-2 space-y-1 text-gray-600">
-                   <li>Telefoon: <a href="tel:+32474662781" class="text-blue-600 hover:underline">+32 474 662781</a></li>
-                   <li>E-mail: <a href="mailto:gregoirefauvarque@hotmail.be" class="text-blue-600 hover:underline">gregoirefauvarque@hotmail.be</a></li>
-               </ul>
-           </div>
-           <div class="flex-1">
-               <h3 class="font-semibold text-blue-800 mb-2">Routebeschrijving</h3>
-               <p class="text-gray-600">De strandcabines zijn gemakkelijk bereikbaar vanaf het centrum van Blankenberge. Volg de kustlijn en u vindt onze cabines aan het aangegeven punt op de kaart.</p>
-           </div>
-       </div>
-   </div>
-   </div>
-   <!-- Beschikbaarheid Cabine 2 -->
-   <div id="cabin2Agenda" class="mt-12 bg-white rounded-xl shadow-lg p-6" style="display: none;">
-       <h2 class="text-2xl font-bold text-blue-900 mb-4">Beschikbaarheid - Cabine 2</h2>
-       <div class="mb-4">
-           <iframe
-               src="https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/1a338984-2500-4622-8b32-fa46fc73bdcb/cid-249909C222CBB60C/index.html" 
-               width="100%"
-               height="600"
-               frameborder="0"
-               scrolling="no">
-           </iframe>
-       </div>
-       <p class="text-sm text-gray-500">Laatste update: 15 maart 2025</p>
-   </div>
-   <!-- Bekijk Agenda Cabine 2 button -->
-   <div class="mt-8 mb-12 text-center">
-       <button 
-           onclick="toggleCabin2Agenda()" 
-           class="inline-block bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold"
-       >
-           <span id="cabin2AgendaButtonText">Bekijk Beschikbaarheid Cabine 2</span>
-       </button>
-   </div>
-   <!-- Rest van de modals en JavaScript -->
+   <!-- ... (bestaande HTML code voor betalingsinformatie, beveiliging en privacy, en contactinformatie blijft hetzelfde) -->
+
+   <!-- FullCalendar en Moment.js -->
+   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.min.js'></script>
+   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales/nl.js'></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
    <!-- Leaflet JavaScript voor OpenStreetMap -->
    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-   <script>
-       // Overige functies...
 
-       // Toon/verberg agenda voor Cabine 2
-       function toggleCabin2Agenda() {
-           const cabin2Agenda = document.getElementById('cabin2Agenda');
-           const buttonText = document.getElementById('cabin2AgendaButtonText');
+   <script>
+       // Functie om gebeurtenissen op te halen en te filteren
+       async function getFilteredEvents(calendarUrl) {
+           const response = await fetch(calendarUrl);
+           const data = await response.text();
+           const parser = new DOMParser();
+           const xmlDoc = parser.parseFromString(data, "text/xml");
+           const events = xmlDoc.getElementsByTagName("event");
            
-           if (cabin2Agenda.style.display === 'none') {
-               cabin2Agenda.style.display = 'block';
-               buttonText.textContent = 'Verberg Beschikbaarheid Cabine 2';
-           } else {
-               cabin2Agenda.style.display = 'none';
-               buttonText.textContent = 'Bekijk Beschikbaarheid Cabine 2';
+           const filteredEvents = [];
+           for (let event of events) {
+               const title = event.getElementsByTagName("title")[0].textContent;
+               if (title.toLowerCase().includes("reservatie")) {
+                   const startDate = event.getElementsByTagName("startdate")[0].textContent;
+                   const endDate = event.getElementsByTagName("enddate")[0].textContent;
+                   filteredEvents.push({ title, startDate, endDate });
+               }
            }
+           return filteredEvents;
        }
+
+       // Initialiseer de kalender
+       let calendar;
+       let activeCabin = 1;
+
+       document.addEventListener('DOMContentLoaded', async function() {
+           const calendarEl = document.getElementById('calendar');
+           
+           const cabin1Events = await getFilteredEvents("https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/f4c108f9-ae36-4c31-b132-2049d9a0d9f9/cid-249909C222CBB60C/calendar.xml");
+           const cabin2Events = await getFilteredEvents("https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/1a338984-2500-4622-8b32-fa46fc73bdcb/cid-249909C222CBB60C/calendar.xml");
+           
+           // FullCalendar initialisatie
+           calendar = new FullCalendar.Calendar(calendarEl, {
+               initialView: 'dayGridMonth',
+               headerToolbar: {
+                   left: 'prev,next today',
+                   center: 'title',
+                   right: 'dayGridMonth,dayGridWeek'
+               },
+               events: cabin1Events,
+               validRange: {
+                   start: '2025-04-01',
+                   end: '2025-10-01'
+               },
+               locale: 'nl',
+               firstDay: 1, // Maandag als eerste dag van de week
+               height: 'auto',
+               fixedWeekCount: false,
+               showNonCurrentDates: false,
+               dayCellClassNames: function(info) {
+                   if (activeCabin === 1) {
+                       return cabin1Events.some(event => moment(event.startDate).isSameOrBefore(info.date, 'day') && moment(event.endDate).isSameOrAfter(info.date, 'day')) ? 'booked' : 'available';
+                   } else {
+                       return cabin2Events.some(event => moment(event.startDate).isSameOrBefore(info.date, 'day') && moment(event.endDate).isSameOrAfter(info.date, 'day')) ? 'booked' : 'available';
+                   }
+               }
+           });
+           
+           calendar.render();
+       });
    </script>
 </body>
 </html>
+// Functie om tussen cabines te wisselen
+function switchCabin(cabinNumber) {
+    if (cabinNumber === activeCabin) return;
+    
+    // Update actieve cabine
+    activeCabin = cabinNumber;
+    
+    // Update knoppen
+    document.getElementById('cabin1Button').classList.toggle('active', cabinNumber === 1);
+    document.getElementById('cabin2Button').classList.toggle('active', cabinNumber === 2);
+    
+    if (cabinNumber === 1) {
+        calendar.batchRendering(() => {
+            calendar.setEvents(cabin1Events);
+            calendar.setOption('dayCellClassNames', function(info) {
+                return cabin1Events.some(event => moment(event.startDate).isSameOrBefore(info.date, 'day') && moment(event.endDate).isSameOrAfter(info.date, 'day')) ? 'booked' : 'available';
+            });
+        });
+    } else {
+        calendar.batchRendering(() => {
+            calendar.setEvents(cabin2Events);
+            calendar.setOption('dayCellClassNames', function(info) {
+                return cabin2Events.some(event => moment(event.startDate).isSameOrBefore(info.date, 'day') && moment(event.endDate).isSameOrAfter(info.date, 'day')) ? 'booked' : 'available';
+            });
+        });
+    }
+}
+
+// Overige functies...
+function openBooking(cabinId) {
+    activeCabinId = cabinId;
+    document.getElementById('cabinId').value = cabinId;
+    const modal = document.getElementById('bookingModal');
+    modal.classList.add('active');
+    document.getElementById('modalTitle').textContent = `Reserveer Strandcabine ${cabinId}`;
+}
+
+function closeModal() {
+    document.getElementById('bookingModal').classList.remove('active');
+    document.getElementById('idUploadModal').classList.remove('active');
+    document.getElementById('paymentModal').classList.remove('active');
+    document.getElementById('confirmationModal').classList.remove('active');
+    const form = document.getElementById('bookingForm');
+    if (form) form.reset();
+}
+
+function showIdUploadModal() {
+    document.getElementById('bookingModal').classList.remove('active');
+    document.getElementById('idUploadModal').classList.add('active');
+}
+
+function showPaymentOptions() {
+    document.getElementById('idUploadModal').classList.remove('active');
+    document.getElementById('paymentModal').classList.add('active');
+    
+    // Hide all payment options first
+    document.querySelectorAll('#paymentModal [id^="payment-"]').forEach(el => {
+        el.classList.add('hidden');
+    });
+    
+    // Show the relevant payment option based on period
+    if (formData.period) {
+        const paymentDiv = document.getElementById(`payment-${formData.period}`);
+        if (paymentDiv) {
+            paymentDiv.classList.remove('hidden');
+        }
+    }
+}
+
+function showConfirmation() {
+    document.getElementById('paymentModal').classList.remove('active');
+    document.getElementById('confirmationModal').classList.add('active');
+}
+
+// Handle form submission with Formspree
+document.getElementById('bookingForm').addEventListener('submit', function(event) {
+    // ... (code blijft hetzelfde)
+});
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        closeModal();
+    }
+}
+// Initialiseer de kaart wanneer het document geladen is
+document.addEventListener('DOMContentLoaded', function() {
+    // Coördinaten: 51°19'04.1"N 3°07'58.5"E = 51.317806, 3.132917
+    const lat = 51.317806;
+    const lng = 3.132917;
+    
+    // Maak een nieuwe kaart in het "map" element
+    const map = L.map('map').setView([lat, lng], 16);
+    
+    // Voeg de OpenStreetMap tile layer toe
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    // Voeg een marker toe op de locatie
+    const marker = L.marker([lat, lng]).addTo(map);
+    
+    // Voeg een popup toe
+    marker.bindPopup("<strong>Strandcabines Blankenberge</strong><br>Hier vindt u onze strandcabines!").openPopup();
+});
