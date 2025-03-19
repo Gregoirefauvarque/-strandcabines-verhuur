@@ -5,6 +5,8 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Strandcabines Blankenberge</title>
    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+   <!-- Leaflet CSS voor OpenStreetMap -->
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
    <style>
        .modal {
            display: none;
@@ -126,12 +128,12 @@
            </div>
            <div class="map-container" id="map"></div>
            <div class="mt-4">
-               <a href="https://www.google.com/maps?q=51.317806,3.132917" target="_blank" class="text-blue-600 hover:underline flex items-center">
+               <a href="https://www.openstreetmap.org/?mlat=51.317806&mlon=3.132917&zoom=16" target="_blank" class="text-blue-600 hover:underline flex items-center">
                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                    </svg>
-                   Bekijk in Google Maps
+                   Bekijk in OpenStreetMap
                </a>
            </div>
        </div>
@@ -392,44 +394,34 @@
        </div>
    </footer>
 
-   <!-- Google Maps JavaScript -->
+   <!-- Leaflet JavaScript voor OpenStreetMap -->
+   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+   
    <script>
-       // Initialiseer de Google Maps kaart
-       function initMap() {
-           // Coördinaten omzetten: 51°19'04.1"N 3°07'58.5"E = 51.317806, 3.132917
-           const cabineLocation = { lat: 51.317806, lng: 3.132917 };
-           
-           // Maak een nieuwe kaart
-           const map = new google.maps.Map(document.getElementById("map"), {
-               zoom: 16,
-               center: cabineLocation,
-               mapTypeId: 'hybrid', // Satellietweergave met labels
-               mapTypeControl: true,
-               zoomControl: true,
-               streetViewControl: true,
-           });
-           
-           // Voeg een marker toe op de locatie
-           const marker = new google.maps.Marker({
-               position: cabineLocation,
-               map: map,
-               title: "Strandcabines Blankenberge",
-               animation: google.maps.Animation.DROP
-           });
-           
-           // Voeg een infovenster toe
-           const infowindow = new google.maps.InfoWindow({
-               content: "<strong>Strandcabines Blankenberge</strong><br>Hier vindt u onze strandcabines!"
-           });
-           
-           marker.addListener("click", () => {
-               infowindow.open(map, marker);
-           });
-       }
-
        // Overige functies
        let activeCabinId = null;
        let formData = {};
+
+       // Initialiseer de kaart wanneer het document geladen is
+       document.addEventListener('DOMContentLoaded', function() {
+           // Coördinaten: 51°19'04.1"N 3°07'58.5"E = 51.317806, 3.132917
+           const lat = 51.317806;
+           const lng = 3.132917;
+           
+           // Maak een nieuwe kaart in het "map" element
+           const map = L.map('map').setView([lat, lng], 16);
+           
+           // Voeg de OpenStreetMap tile layer toe
+           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+               attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+           }).addTo(map);
+           
+           // Voeg een marker toe op de locatie
+           const marker = L.marker([lat, lng]).addTo(map);
+           
+           // Voeg een popup toe
+           marker.bindPopup("<strong>Strandcabines Blankenberge</strong><br>Hier vindt u onze strandcabines!").openPopup();
+       });
 
        function openBooking(cabinId) {
            activeCabinId = cabinId;
@@ -541,10 +533,5 @@
            }
        }
    </script>
-   
-   <!-- Google Maps API script -->
-   <script async defer
-     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMH-rAe6QWEwWLipKgdxQa_3cCPuBL1XY&callback=initMap">
-   </script>
 </body>
-</html>
+</html>   
