@@ -23,6 +23,12 @@
            opacity: 0.7;
            pointer-events: none;
        }
+       .map-container {
+           height: 300px;
+           width: 100%;
+           border-radius: 8px;
+           overflow: hidden;
+       }
    </style>
 </head>
 <body class="bg-blue-50 min-h-screen">
@@ -52,7 +58,6 @@
                    <div class="mb-6">
                        <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
                        <div class="space-y-2 text-gray-600">
-                           <p>Per dag: €51</p>
                            <p>Per week: €105</p>
                            <p>Per 2 weken: €205</p>
                            <div class="mt-2">
@@ -91,7 +96,6 @@
                    <div class="mb-6">
                        <h3 class="font-semibold text-blue-800 mb-2">Prijzen:</h3>
                        <div class="space-y-2 text-gray-600">
-                           <p>Per dag: €51</p>
                            <p>Per week: €105</p>
                            <p>Per 2 weken: €205</p>
                            <div class="mt-2">
@@ -113,8 +117,27 @@
            </div>
        </div>
 
-       <!-- Betalingsinformatie -->
+       <!-- Locatie Sectie -->
        <div class="mt-12 bg-white rounded-xl shadow-lg p-6">
+           <h2 class="text-2xl font-bold text-blue-900 mb-4">Locatie</h2>
+           <div class="text-gray-600 mb-4">
+               <p>Onze strandcabines bevinden zich op een ideale locatie aan het strand van Blankenberge.</p>
+               <p class="mt-2">Coördinaten: 51°19'04.1"N 3°07'58.5"E</p>
+           </div>
+           <div class="map-container" id="map"></div>
+           <div class="mt-4">
+               <a href="https://www.google.com/maps?q=51.317806,3.132917" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                   </svg>
+                   Bekijk in Google Maps
+               </a>
+           </div>
+       </div>
+
+       <!-- Betalingsinformatie -->
+       <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
            <h2 class="text-2xl font-bold text-blue-900 mb-4">Betalingsinformatie</h2>
            <div class="text-gray-600">
                <p class="mb-4">Het reserverings- en betalingsproces verloopt als volgt:</p>
@@ -172,14 +195,13 @@
                    </ul>
                </div>
                <div class="flex-1">
-                   <h3 class="font-semibold text-blue-800 mb-2">Locatie</h3>
-                   <p class="text-gray-600">Onze strandcabines bevinden zich op het strand van Blankenberge, in de buurt van [specifiek herkenningspunt].</p>
+                   <h3 class="font-semibold text-blue-800 mb-2">Routebeschrijving</h3>
+                   <p class="text-gray-600">De strandcabines zijn gemakkelijk bereikbaar vanaf het centrum van Blankenberge. Volg de kustlijn en u vindt onze cabines aan het aangegeven punt op de kaart.</p>
                </div>
            </div>
        </div>
    </div>
-
-   <!-- Booking Modal -->
+<!-- Booking Modal -->
    <div id="bookingModal" class="modal">
        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
            <h2 id="modalTitle" class="text-2xl font-bold mb-6">Reserveer Strandcabine</h2>
@@ -204,7 +226,6 @@
                <div>
                    <label class="block mb-1 font-medium">Periode</label>
                    <select name="period" required class="w-full p-2 border rounded" id="periodSelect">
-                       <option value="day">Per dag (€51)</option>
                        <option value="week">Per week (€105)</option>
                        <option value="twoWeeks">2 weken (€205)</option>
                        <option value="monthApril">April (€355)</option>
@@ -297,12 +318,6 @@
            </div>
            
            <div class="space-y-4">
-               <div id="payment-day" class="hidden">
-                   <a href="https://buy.stripe.com/6oE4gz0eJ6zbfHq7ss" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
-                       Betaal voor Dagverhuur (€51)
-                   </a>
-               </div>
-               
                <div id="payment-week" class="hidden">
                    <a href="https://buy.stripe.com/00g3cv3qVbTv2UE289" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
                        Betaal voor Week verhuur (€105)
@@ -377,7 +392,42 @@
        </div>
    </footer>
 
+   <!-- Google Maps JavaScript -->
    <script>
+       // Initialiseer de Google Maps kaart
+       function initMap() {
+           // Coördinaten omzetten: 51°19'04.1"N 3°07'58.5"E = 51.317806, 3.132917
+           const cabineLocation = { lat: 51.317806, lng: 3.132917 };
+           
+           // Maak een nieuwe kaart
+           const map = new google.maps.Map(document.getElementById("map"), {
+               zoom: 16,
+               center: cabineLocation,
+               mapTypeId: 'hybrid', // Satellietweergave met labels
+               mapTypeControl: true,
+               zoomControl: true,
+               streetViewControl: true,
+           });
+           
+           // Voeg een marker toe op de locatie
+           const marker = new google.maps.Marker({
+               position: cabineLocation,
+               map: map,
+               title: "Strandcabines Blankenberge",
+               animation: google.maps.Animation.DROP
+           });
+           
+           // Voeg een infovenster toe
+           const infowindow = new google.maps.InfoWindow({
+               content: "<strong>Strandcabines Blankenberge</strong><br>Hier vindt u onze strandcabines!"
+           });
+           
+           marker.addListener("click", () => {
+               infowindow.open(map, marker);
+           });
+       }
+
+       // Overige functies
        let activeCabinId = null;
        let formData = {};
 
@@ -490,6 +540,11 @@
                closeModal();
            }
        }
+   </script>
+   
+   <!-- Google Maps API script -->
+   <script async defer
+     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMH-rAe6QWEwWLipKgdxQa_3cCPuBL1XY&callback=initMap">
    </script>
 </body>
 </html>
