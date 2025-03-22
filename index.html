@@ -38,10 +38,65 @@
            border-radius: 8px;
            overflow: hidden;
        }
+       .date-picker-container {
+           position: relative;
+       }
        .date-disabled {
            background-color: #f2f2f2;
            color: #999;
            cursor: not-allowed;
+       }
+       /* Styling voor de kalenderweergave in het boekingsformulier */
+       .custom-calendar {
+           max-width: 100%;
+           border-radius: 8px;
+           overflow: hidden;
+           margin-top: 10px;
+           border: 1px solid #e2e8f0;
+       }
+       .custom-calendar-header {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           padding: 10px;
+           background-color: #e6f2ff;
+       }
+       .custom-calendar-grid {
+           display: grid;
+           grid-template-columns: repeat(7, 1fr);
+           background-color: white;
+       }
+       .custom-calendar-day {
+           height: 40px;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           border: 1px solid #f0f0f0;
+           cursor: pointer;
+       }
+       .custom-calendar-day-header {
+           font-weight: bold;
+           background-color: #f8fafc;
+           height: 30px;
+       }
+       .custom-calendar-day.unavailable {
+           background-color: #fee2e2;
+           color: #ef4444;
+           text-decoration: line-through;
+           cursor: not-allowed;
+       }
+       .custom-calendar-day.selected {
+           background-color: #3b82f6;
+           color: white;
+       }
+       .custom-calendar-day.in-range {
+           background-color: #dbeafe;
+       }
+       .custom-calendar-day.today {
+           border: 2px solid #3b82f6;
+       }
+       .custom-calendar-day.different-month {
+           color: #9ca3af;
        }
    </style>
 </head>
@@ -245,7 +300,6 @@
            </div>
        </div>
    </div>
-
    <!-- Booking Modal -->
    <div id="bookingModal" class="modal">
        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
@@ -270,7 +324,7 @@
 
                <div>
                    <label class="block mb-1 font-medium">Periode</label>
-                   <select name="period" required class="w-full p-2 border rounded" id="periodSelect" onchange="updateDateRangeOptions()">
+                   <select name="period" required class="w-full p-2 border rounded" id="periodSelect" onchange="updateCalendarView()">
                        <option value="week">Per week (€105)</option>
                        <option value="twoWeeks">2 weken (€205)</option>
                        <option value="monthApril">April (€355)</option>
@@ -281,18 +335,42 @@
                    </select>
                </div>
 
+               <!-- Custom Calendar Selection -->
                <div>
-                   <label class="block mb-1 font-medium">Start datum</label>
-                   <input 
-                       type="date" 
-                       name="startDate" 
-                       id="startDateInput"
-                       required 
-                       min="2025-04-01" 
-                       max="2025-09-30" 
-                       class="w-full p-2 border rounded"
-                       onchange="checkDateAvailability()"
-                   >
+                   <label class="block mb-1 font-medium">Selecteer datum</label>
+                   <div class="date-picker-container">
+                       <input 
+                           type="text" 
+                           id="selectedDateDisplay" 
+                           readonly
+                           class="w-full p-2 border rounded cursor-pointer"
+                           placeholder="Klik om datum te selecteren"
+                           onclick="toggleCalendarView()"
+                       >
+                       <input type="hidden" id="startDateInput" name="startDate" required>
+                       <input type="hidden" id="endDateInput" name="endDate">
+                       
+                       <!-- Inline Calendar View (initially hidden) -->
+                       <div id="calendarView" class="custom-calendar hidden">
+                           <div class="custom-calendar-header">
+                               <button type="button" class="px-2 py-1 bg-blue-100 rounded" onclick="changeMonth(-1)">&lt;</button>
+                               <span id="currentMonthYear" class="font-medium">Mei 2025</span>
+                               <button type="button" class="px-2 py-1 bg-blue-100 rounded" onclick="changeMonth(1)">&gt;</button>
+                           </div>
+                           <div class="custom-calendar-grid" id="calendarGrid">
+                               <!-- Dagen van de week koppen -->
+                               <div class="custom-calendar-day custom-calendar-day-header">Ma</div>
+                               <div class="custom-calendar-day custom-calendar-day-header">Di</div>
+                               <div class="custom-calendar-day custom-calendar-day-header">Wo</div>
+                               <div class="custom-calendar-day custom-calendar-day-header">Do</div>
+                               <div class="custom-calendar-day custom-calendar-day-header">Vr</div>
+                               <div class="custom-calendar-day custom-calendar-day-header">Za</div>
+                               <div class="custom-calendar-day custom-calendar-day-header">Zo</div>
+                               
+                               <!-- Kalender dagen worden hier dynamisch ingevuld -->
+                           </div>
+                       </div>
+                   </div>
                    <p id="dateAvailabilityMessage" class="text-sm text-red-600 hidden mt-1">Deze datum is niet beschikbaar.</p>
                </div>
 
@@ -451,52 +529,361 @@
        
        let activeCabinId = null;
        let formData = {};
+       let currentViewDate = new Date(2025, 3, 1); // 1 april 2025
+       let selectedStartDate = null;
+       let selectedEndDate = null;
 
-       // API om bezette data te controleren (in productie zou dit een echte API-call zijn)
-       async function checkBusynessFromOutlook(cabinId, date) {
-           // In een echte implementatie zou u hier een API-aanroep doen naar uw server
-           // De server zou dan de Outlook-kalender controleren op de aanwezigheid van "bezet" items
-           // Voor deze demo simuleren we deze functionaliteit
-           
-           const dateStr = new Date(date).toISOString().split('T')[0];
-           
-           // Simuleer een vertraging zoals bij een echte API-aanroep
-           await new Promise(resolve => setTimeout(resolve, 200));
-           
-           // Simuleer een aantal "bezet"-gebeurtenissen in de Outlook-kalender
-           // Deze zouden in werkelijkheid uit de Outlook-kalender gehaald worden
-           const bookedDates = {
-               1: [ // Bezette datums voor strandcabine 1
+       // Kalendergedrag
+       let calendarVisible = false;
+       
+       // Functie om te controleren of een datum bezet is in de Outlook-kalender
+       // In werkelijkheid zou dit een API-aanroep zijn naar je backend die de Outlook API raadpleegt
+       function isDateBusyInOutlook(cabinId, date) {
+           // Simuleer bezette data uit de Outlook-kalender
+           // Bij een echte implementatie zou dit gegevens ophalen uit je Outlook-kalender API
+           const busyDates = {
+               1: [
                    "2025-05-05", "2025-05-06", "2025-05-07", "2025-05-08",
-                   "2025-06-12", "2025-06-13", "2025-06-14", "2025-06-15",
-                   "2025-07-20", "2025-07-21", "2025-07-22", "2025-07-23"
+                   "2025-05-09", "2025-05-10", "2025-05-11", "2025-05-12", 
+                   "2025-06-15", "2025-06-16", "2025-06-17", "2025-06-18",
+                   "2025-07-01", "2025-07-02", "2025-07-03", "2025-07-04",
+                   "2025-08-20", "2025-08-21", "2025-08-22", "2025-08-23"
                ],
-               2: [ // Bezette datums voor strandcabine 2
-                   "2025-04-15", "2025-04-16", "2025-04-17", "2025-04-18",
-                   "2025-06-01", "2025-06-02", "2025-06-03", "2025-06-04",
-                   "2025-08-10", "2025-08-11", "2025-08-12", "2025-08-13"
+               2: [
+                   "2025-04-10", "2025-04-11", "2025-04-12", "2025-04-13",
+                   "2025-05-25", "2025-05-26", "2025-05-27", "2025-05-28",
+                   "2025-06-30", "2025-07-01", "2025-07-02", "2025-07-03",
+                   "2025-08-15", "2025-08-16", "2025-08-17", "2025-08-18"
                ]
            };
            
-           // Controleer of de datum bezet is
-           return bookedDates[cabinId].includes(dateStr);
+           // Converteer datum naar de juiste string-indeling (YYYY-MM-DD)
+           const dateStr = date.toISOString().split('T')[0];
+           
+           // Controleer of de datum in de lijst met bezette datums staat
+           return busyDates[cabinId].includes(dateStr);
        }
        
-       // Functie om alle bezette data voor een periode te controleren
-       async function checkPeriodAvailability(cabinId, startDate, endDate) {
-           // Converteren naar datumobjecten
+       // Functie om de startdatum en einddatum te berekenen op basis van de geselecteerde periode
+       function calculateDateRange(startDate, periodType) {
            const start = new Date(startDate);
-           const end = new Date(endDate);
+           let end;
            
-           // Voor elke dag in de periode, controleer of deze bezet is
-           for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
-               const isBusy = await checkBusynessFromOutlook(cabinId, date);
-               if (isBusy) {
-                   return false; // Indien één dag bezet is, is de periode niet beschikbaar
+           switch (periodType) {
+               case 'week':
+                   end = new Date(start);
+                   end.setDate(end.getDate() + 6); // 7 dagen (inclusief startdag)
+                   break;
+               case 'twoWeeks':
+                   end = new Date(start);
+                   end.setDate(end.getDate() + 13); // 14 dagen (inclusief startdag)
+                   break;
+               case 'monthApril':
+                   start = new Date(2025, 3, 1); // 1 april 2025
+                   end = new Date(2025, 3, 30); // 30 april 2025
+                   break;
+               case 'monthMay':
+                   start = new Date(2025, 4, 1); // 1 mei 2025
+                   end = new Date(2025, 4, 31); // 31 mei 2025
+                   break;
+               case 'monthSummer':
+                   // De gebruiker selecteert juni, juli of augustus
+                   const month = start.getMonth();
+                   start = new Date(2025, month, 1); // Eerste dag van de geselecteerde maand
+                   
+                   // Laatste dag van de geselecteerde maand
+                   if (month === 5) { // Juni
+                       end = new Date(2025, 5, 30);
+                   } else if (month === 6) { // Juli
+                       end = new Date(2025, 6, 31);
+                   } else { // Augustus
+                       end = new Date(2025, 7, 31);
+                   }
+                   break;
+               case 'monthSeptember':
+                   start = new Date(2025, 8, 1); // 1 september 2025
+                   end = new Date(2025, 8, 30); // 30 september 2025
+                   break;
+               case 'season':
+                   start = new Date(2025, 3, 1); // 1 april 2025
+                   end = new Date(2025, 8, 30); // 30 september 2025
+                   break;
+               default:
+                   end = new Date(start);
+                   break;
+           }
+           
+           return { start, end };
+       }
+       
+       // Functie om te controleren of een datumbereik volledig beschikbaar is
+       function isDateRangeAvailable(cabinId, startDate, endDate) {
+           // Voor elke dag in het bereik, controleren of deze bezet is
+           for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+               if (isDateBusyInOutlook(cabinId, date)) {
+                   return false; // Als één dag bezet is, is het bereik niet beschikbaar
                }
            }
            
            return true; // Alle dagen zijn beschikbaar
+       }
+       
+       // Datum-helper functies
+       function formatDate(date) {
+           return date.toLocaleDateString('nl-BE', { 
+               day: '2-digit', 
+               month: '2-digit', 
+               year: 'numeric' 
+           });
+       }
+       
+       function formatDateYYYYMMDD(date) {
+           const year = date.getFullYear();
+           const month = String(date.getMonth() + 1).padStart(2, '0');
+           const day = String(date.getDate()).padStart(2, '0');
+           return `${year}-${month}-${day}`;
+       }
+
+       function getDaysInMonth(year, month) {
+           return new Date(year, month + 1, 0).getDate();
+       }
+       
+       function getFirstDayOfMonth(year, month) {
+           return new Date(year, month, 1).getDay();
+       }
+       
+       // Rendering van de kalender
+       function renderCalendar() {
+           const year = currentViewDate.getFullYear();
+           const month = currentViewDate.getMonth();
+           
+           // Update de maand/jaar weergave
+           document.getElementById('currentMonthYear').textContent = 
+               currentViewDate.toLocaleDateString('nl-BE', { month: 'long', year: 'numeric' });
+           
+           // Dagen in de maand
+           const daysInMonth = getDaysInMonth(year, month);
+           
+           // Eerste dag van de maand (0 = zondag, 1 = maandag, etc.)
+           let firstDay = getFirstDayOfMonth(year, month);
+           // Converteer van zondag=0 naar maandag=0 formaat (voor onze kalender die met maandag begint)
+           firstDay = firstDay === 0 ? 6 : firstDay - 1;
+           
+           // Verkrijg de container voor de kalenderdagen
+           const calendarGrid = document.getElementById('calendarGrid');
+           
+           // Wis bestaande dagen na de header rij
+           while (calendarGrid.children.length > 7) {
+               calendarGrid.removeChild(calendarGrid.lastChild);
+           }
+           
+           // Voeg lege cellen toe voor dagen vóór de eerste dag van de maand
+           for (let i = 0; i < firstDay; i++) {
+               const prevMonthDay = document.createElement('div');
+               prevMonthDay.className = 'custom-calendar-day different-month';
+               
+               // Bereken de datum van de vorige maand
+               const prevMonthDate = new Date(year, month, 0 - (firstDay - i - 1));
+               prevMonthDay.textContent = prevMonthDate.getDate();
+               prevMonthDay.dataset.date = formatDateYYYYMMDD(prevMonthDate);
+               
+               // Controleer of deze datum bezet is
+               if (isDateBusyInOutlook(activeCabinId, prevMonthDate)) {
+                   prevMonthDay.classList.add('unavailable');
+               } else {
+                   prevMonthDay.addEventListener('click', () => selectDate(prevMonthDate));
+               }
+               
+               calendarGrid.appendChild(prevMonthDay);
+           }
+           
+           // Voeg dagen van de huidige maand toe
+           const today = new Date();
+           for (let day = 1; day <= daysInMonth; day++) {
+               const date = new Date(year, month, day);
+               const dayElement = document.createElement('div');
+               dayElement.className = 'custom-calendar-day';
+               dayElement.textContent = day;
+               dayElement.dataset.date = formatDateYYYYMMDD(date);
+               
+               // Markeer vandaag
+               if (date.getDate() === today.getDate() && 
+                   date.getMonth() === today.getMonth() && 
+                   date.getFullYear() === today.getFullYear()) {
+                   dayElement.classList.add('today');
+               }
+               
+               // Controleer of deze datum geselecteerd is
+               if (selectedStartDate && selectedEndDate) {
+                   if (date >= selectedStartDate && date <= selectedEndDate) {
+                       if (date.getTime() === selectedStartDate.getTime() || 
+                           date.getTime() === selectedEndDate.getTime()) {
+                           dayElement.classList.add('selected');
+                       } else {
+                           dayElement.classList.add('in-range');
+                       }
+                   }
+               }
+               
+               // Controleer of deze datum bezet is
+               if (isDateBusyInOutlook(activeCabinId, date)) {
+                   dayElement.classList.add('unavailable');
+               } else {
+                   dayElement.addEventListener('click', () => selectDate(date));
+               }
+               
+               calendarGrid.appendChild(dayElement);
+           }
+           
+           // Voeg lege cellen toe voor dagen na de laatste dag van de maand
+           const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+           for (let i = firstDay + daysInMonth; i < totalCells; i++) {
+               const nextMonthDay = document.createElement('div');
+               nextMonthDay.className = 'custom-calendar-day different-month';
+               
+               // Bereken de datum van de volgende maand
+               const nextMonthDate = new Date(year, month + 1, i - (firstDay + daysInMonth) + 1);
+               nextMonthDay.textContent = nextMonthDate.getDate();
+               nextMonthDay.dataset.date = formatDateYYYYMMDD(nextMonthDate);
+               
+               // Controleer of deze datum bezet is
+               if (isDateBusyInOutlook(activeCabinId, nextMonthDate)) {
+                   nextMonthDay.classList.add('unavailable');
+               } else {
+                   nextMonthDay.addEventListener('click', () => selectDate(nextMonthDate));
+               }
+               
+               calendarGrid.appendChild(nextMonthDay);
+           }
+       }
+       
+       // Functie om van maand te veranderen
+       function changeMonth(direction) {
+           currentViewDate.setMonth(currentViewDate.getMonth() + direction);
+           renderCalendar();
+       }
+       
+       // Functie om de kalenderweergave te tonen/verbergen
+       function toggleCalendarView() {
+           const calendarView = document.getElementById('calendarView');
+           calendarVisible = !calendarVisible;
+           
+           if (calendarVisible) {
+               calendarView.classList.remove('hidden');
+               renderCalendar();
+           } else {
+               calendarView.classList.add('hidden');
+           }
+       }
+       
+       // Datum selectie functie
+       function selectDate(date) {
+           // Controleer eerst of de datum niet bezet is
+           if (isDateBusyInOutlook(activeCabinId, date)) {
+               return; // Sta selectie van bezette dagen niet toe
+           }
+           
+           // Bepaal de selectiemodus op basis van de geselecteerde periode
+           const periodSelect = document.getElementById('periodSelect');
+           const period = periodSelect.value;
+           
+           // Bereken het datumbereik op basis van de geselecteerde datum en periode
+           const dateRange = calculateDateRange(date, period);
+           
+           // Controleer of het volledige bereik beschikbaar is
+           if (!isDateRangeAvailable(activeCabinId, dateRange.start, dateRange.end)) {
+               // Toon foutmelding
+               const errorMessage = document.getElementById('dateAvailabilityMessage');
+               errorMessage.textContent = `Eén of meer dagen in de gekozen periode zijn niet beschikbaar.`;
+               errorMessage.classList.remove('hidden');
+               return;
+           }
+           
+           // Stel de geselecteerde start- en einddatum in
+           selectedStartDate = dateRange.start;
+           selectedEndDate = dateRange.end;
+           
+           // Update de zichtbare datum weergave
+           document.getElementById('selectedDateDisplay').value = 
+               `${formatDate(selectedStartDate)} - ${formatDate(selectedEndDate)}`;
+           
+           // Update de formulierinvoervelden
+           document.getElementById('startDateInput').value = formatDateYYYYMMDD(selectedStartDate);
+           document.getElementById('endDateInput').value = formatDateYYYYMMDD(selectedEndDate);
+           
+           // Verberg eventuele foutmelding
+           document.getElementById('dateAvailabilityMessage').classList.add('hidden');
+           
+           // Herlaad de kalender om de selectie weer te geven
+           renderCalendar();
+       }
+       
+       // Functie om de kalenderweergave bij te werken wanneer de periode verandert
+       function updateCalendarView() {
+           const periodSelect = document.getElementById('periodSelect');
+           const period = periodSelect.value;
+           
+           // Reset geselecteerde datums
+           selectedStartDate = null;
+           selectedEndDate = null;
+           
+           // Wis de weergave
+           document.getElementById('selectedDateDisplay').value = '';
+           document.getElementById('startDateInput').value = '';
+           document.getElementById('endDateInput').value = '';
+           
+           // Reset kalenderweergave
+           if (calendarVisible) {
+               renderCalendar();
+           }
+           
+           // Toon periodepecifieke hint
+           let hint = '';
+           switch (period) {
+               case 'monthApril':
+                   hint = '1 april - 30 april 2025';
+                   // Controleer direct of april beschikbaar is
+                   if (!isDateRangeAvailable(activeCabinId, new Date(2025, 3, 1), new Date(2025, 3, 30))) {
+                       document.getElementById('dateAvailabilityMessage').textContent = 'April is niet volledig beschikbaar.';
+                       document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
+                   }
+                   break;
+               case 'monthMay':
+                   hint = '1 mei - 31 mei 2025';
+                   // Controleer direct of mei beschikbaar is
+                   if (!isDateRangeAvailable(activeCabinId, new Date(2025, 4, 1), new Date(2025, 4, 31))) {
+                       document.getElementById('dateAvailabilityMessage').textContent = 'Mei is niet volledig beschikbaar.';
+                       document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
+                   }
+                   break;
+               case 'monthSummer':
+                   hint = 'Selecteer een startdatum in juni, juli of augustus';
+                   break;
+               case 'monthSeptember':
+                   hint = '1 september - 30 september 2025';
+                   // Controleer direct of september beschikbaar is
+                   if (!isDateRangeAvailable(activeCabinId, new Date(2025, 8, 1), new Date(2025, 8, 30))) {
+                       document.getElementById('dateAvailabilityMessage').textContent = 'September is niet volledig beschikbaar.';
+                       document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
+                   }
+                   break;
+               case 'season':
+                   hint = '1 april - 30 september 2025';
+                   // Controleer direct of het hele seizoen beschikbaar is
+                   if (!isDateRangeAvailable(activeCabinId, new Date(2025, 3, 1), new Date(2025, 8, 30))) {
+                       document.getElementById('dateAvailabilityMessage').textContent = 'Het hele seizoen is niet volledig beschikbaar.';
+                       document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
+                   }
+                   break;
+               case 'week':
+                   hint = 'Selecteer een startdatum voor de week';
+                   break;
+               case 'twoWeeks':
+                   hint = 'Selecteer een startdatum voor de 2 weken';
+                   break;
+           }
+           
+           document.getElementById('selectedDateDisplay').placeholder = hint;
        }
 
        // Initialiseer de kaart wanneer het document geladen is
@@ -518,9 +905,22 @@
            
            // Voeg een popup toe
            marker.bindPopup("<strong>Strandcabines Blankenberge</strong><br>Hier vindt u onze strandcabines!").openPopup();
+           
+           // Sluit eventuele actieve modals bij klikken buiten kalenderweergave
+           document.addEventListener('click', function(event) {
+               const calendarView = document.getElementById('calendarView');
+               const dateDisplay = document.getElementById('selectedDateDisplay');
+               
+               if (calendarVisible && 
+                   !calendarView.contains(event.target) && 
+                   event.target !== dateDisplay) {
+                   calendarVisible = false;
+                   calendarView.classList.add('hidden');
+               }
+           });
        });
 
-       // Functie om de kalender te bekijken
+       // Functie om de Outlook-kalender te bekijken
        function viewCalendar(cabinId) {
            activeCabinId = cabinId;
            const modal = document.getElementById('calendarModal');
@@ -546,8 +946,8 @@
            // Verberg foutberichten
            document.getElementById('dateAvailabilityMessage').classList.add('hidden');
            
-           // Update datumopties op basis van geselecteerde periode
-           updateDateRangeOptions();
+           // Update kalenderweergave op basis van de geselecteerde periode
+           updateCalendarView();
        }
 
        function closeModal() {
@@ -559,152 +959,20 @@
            
            const form = document.getElementById('bookingForm');
            if (form) form.reset();
+           
+           // Reset kalenderweergave
+           calendarVisible = false;
+           const calendarView = document.getElementById('calendarView');
+           if (calendarView) {
+               calendarView.classList.add('hidden');
+           }
        }
        
        function closeAllModals() {
-           document.getElementById('bookingModal').classList.remove('active');
-           document.getElementById('idUploadModal').classList.remove('active');
-           document.getElementById('paymentModal').classList.remove('active');
-           document.getElementById('confirmationModal').classList.remove('active');
-           document.getElementById('calendarModal').classList.remove('active');
-           
-           const form = document.getElementById('bookingForm');
-           if (form) form.reset();
+           closeModal();
            formData = {};
-       }
-       
-       // Functie om de beschikbaarheid van een datum te controleren
-       async function checkDateAvailability() {
-           const dateInput = document.getElementById('startDateInput');
-           const selectedDate = dateInput.value;
-           const errorMessage = document.getElementById('dateAvailabilityMessage');
-           const submitBtn = document.getElementById('submitBtn');
-           
-           if (!selectedDate) return;
-           
-           // Visuele feedback tijdens het controleren
-           dateInput.classList.add('bg-gray-100');
-           submitBtn.disabled = true;
-           
-           try {
-               // Bereken de einddatum op basis van de geselecteerde periode
-               const periodSelect = document.getElementById('periodSelect');
-               const selectedPeriod = periodSelect.value;
-               
-               let endDate;
-               switch (selectedPeriod) {
-                   case 'week':
-                       endDate = new Date(selectedDate);
-                       endDate.setDate(endDate.getDate() + 6); // 7 dagen (inclusief startdag)
-                       break;
-                   case 'twoWeeks':
-                       endDate = new Date(selectedDate);
-                       endDate.setDate(endDate.getDate() + 13); // 14 dagen (inclusief startdag)
-                       break;
-                   case 'monthApril':
-                       endDate = new Date(2025, 3, 30); // 30 april 2025
-                       break;
-                   case 'monthMay':
-                       endDate = new Date(2025, 4, 31); // 31 mei 2025
-                       break;
-                   case 'monthSummer':
-                       // Controleer welke zomermaand is geselecteerd
-                       const startMonth = new Date(selectedDate).getMonth();
-                       if (startMonth === 5) { // Juni
-                           endDate = new Date(2025, 5, 30); // 30 juni 2025
-                       } else if (startMonth === 6) { // Juli
-                           endDate = new Date(2025, 6, 31); // 31 juli 2025
-                       } else { // Augustus
-                           endDate = new Date(2025, 7, 31); // 31 augustus 2025
-                       }
-                       break;
-                   case 'monthSeptember':
-                       endDate = new Date(2025, 8, 30); // 30 september 2025
-                       break;
-                   case 'season':
-                       endDate = new Date(2025, 8, 30); // 30 september 2025
-                       break;
-                   default:
-                       endDate = new Date(selectedDate);
-                       break;
-               }
-               
-               // Formateer de einddatum voor API-aanroep
-               const endDateStr = endDate.toISOString().split('T')[0];
-               
-               // Controleer of de geselecteerde periode beschikbaar is
-               const isAvailable = await checkPeriodAvailability(activeCabinId, selectedDate, endDateStr);
-               
-               if (!isAvailable) {
-                   // Periode is niet beschikbaar
-                   errorMessage.textContent = `Deze periode (${selectedDate} t/m ${endDateStr}) is niet beschikbaar.`;
-                   errorMessage.classList.remove('hidden');
-                   dateInput.classList.add('border-red-500');
-                   submitBtn.disabled = true;
-               } else {
-                   // Periode is beschikbaar
-                   errorMessage.classList.add('hidden');
-                   dateInput.classList.remove('border-red-500');
-                   submitBtn.disabled = false;
-               }
-           } catch (error) {
-               console.error('Fout bij het controleren van beschikbaarheid:', error);
-               // Bij een fout laten we de gebruiker doorgaan, maar tonen een waarschuwing
-               errorMessage.textContent = "Kon beschikbaarheid niet controleren. U kunt doorgaan, maar er is geen garantie dat deze periode beschikbaar is.";
-               errorMessage.classList.remove('hidden');
-               submitBtn.disabled = false;
-           } finally {
-               // Herstel visuele feedback
-               dateInput.classList.remove('bg-gray-100');
-           }
-       }
-       
-       // Functie om de datumopties bij te werken op basis van de geselecteerde periode
-       function updateDateRangeOptions() {
-           const periodSelect = document.getElementById('periodSelect');
-           const startDateInput = document.getElementById('startDateInput');
-           
-           // Reset foutberichten
-           document.getElementById('dateAvailabilityMessage').classList.add('hidden');
-           startDateInput.classList.remove('border-red-500');
-           
-           const selectedPeriod = periodSelect.value;
-           
-           // Bepaal min en max data op basis van de geselecteerde periode
-           switch (selectedPeriod) {
-               case 'monthApril':
-                   startDateInput.value = '2025-04-01';
-                   startDateInput.disabled = true;
-                   break;
-               case 'monthMay':
-                   startDateInput.value = '2025-05-01';
-                   startDateInput.disabled = true;
-                   break;
-               case 'monthSummer':
-                   startDateInput.value = '2025-06-01';
-                   startDateInput.disabled = false; // Gebruiker kan kiezen: juni, juli of augustus
-                   startDateInput.min = '2025-06-01';
-                   startDateInput.max = '2025-08-01';
-                   break;
-               case 'monthSeptember':
-                   startDateInput.value = '2025-09-01';
-                   startDateInput.disabled = true;
-                   break;
-               case 'season':
-                   startDateInput.value = '2025-04-01';
-                   startDateInput.disabled = true;
-                   break;
-               default:
-                   startDateInput.disabled = false;
-                   startDateInput.min = '2025-04-01';
-                   startDateInput.max = '2025-09-30';
-                   break;
-           }
-           
-           // Controleer beschikbaarheid voor voorgeselecteerde datums als er een datum is ingevuld
-           if (startDateInput.value) {
-               checkDateAvailability();
-           }
+           selectedStartDate = null;
+           selectedEndDate = null;
        }
        
        function showIdUploadModal() {
@@ -740,12 +1008,10 @@
            // Voorkom standaard formulierinzending om het zelf af te handelen
            event.preventDefault();
            
-           // Controleer nog een keer de beschikbaarheid
-           const dateInput = document.getElementById('startDateInput');
-           const selectedDate = dateInput.value;
-           
-           if (!selectedDate) {
-               alert('Selecteer a.u.b. een startdatum.');
+           // Controleer of er een datum is geselecteerd
+           if (!document.getElementById('startDateInput').value) {
+               document.getElementById('dateAvailabilityMessage').textContent = 'Selecteer a.u.b. een datum.';
+               document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
                return;
            }
            
@@ -758,17 +1024,6 @@
            submitBtn.textContent = 'Bezig met verzenden...';
            
            try {
-               // Voer een laatste beschikbaarheidscontrole uit
-               await checkDateAvailability();
-               
-               // Als de knop nog steeds uitgeschakeld is, is de datum niet beschikbaar
-               if (submitBtn.disabled) {
-                   alert('Deze periode is niet beschikbaar. Kies a.u.b. een andere datum.');
-                   form.classList.remove('form-loading');
-                   submitBtn.textContent = 'Reserveer';
-                   return;
-               }
-               
                // Sla formuliergegevens op
                const formDataObj = new FormData(form);
                formData = {};
