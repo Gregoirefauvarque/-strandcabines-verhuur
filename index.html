@@ -7,8 +7,6 @@
    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
    <!-- Leaflet CSS voor OpenStreetMap -->
    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-   <!-- Microsoft Graph API client -->
-   <script src="https://alcdn.msauth.net/browser/2.30.0/js/msal-browser.min.js"></script>
    <style>
        .modal {
            display: none;
@@ -101,7 +99,7 @@
            color: #9ca3af;
        }
        
-       /* New styles for calendar sync UI */
+       /* Styles for calendar sync UI */
        .sync-indicator {
            display: none;
            position: absolute;
@@ -158,21 +156,6 @@
            width: 14px;
            height: 14px;
            margin-right: 4px;
-       }
-       
-       .auth-warning {
-           display: none;
-           margin-top: 10px;
-           padding: 8px 12px;
-           background-color: #fff0f0;
-           border: 1px solid #f8d7da;
-           border-radius: 4px;
-           color: #721c24;
-           font-size: 14px;
-       }
-       
-       .auth-warning.active {
-           display: block;
        }
    </style>
 </head>
@@ -347,7 +330,7 @@
            </div>
        </div>
    </div>
-   <!-- Booking Modal -->
+ <!-- Booking Modal -->
    <div id="bookingModal" class="modal">
        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
            <h2 id="modalTitle" class="text-2xl font-bold mb-6">Reserveer Strandcabine</h2>
@@ -397,14 +380,6 @@
                        <input type="hidden" id="startDateInput" name="startDate" required>
                        <input type="hidden" id="endDateInput" name="endDate">
                        
-                       <!-- Auth warning message -->
-                       <div id="authWarning" class="auth-warning">
-                           <p>Om de beschikbaarheid te controleren, klik eerst op "Autoriseer Kalender".</p>
-                           <button type="button" onclick="authorizeCalendar()" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md text-sm">
-                               Autoriseer Kalender
-                           </button>
-                       </div>
-                       
                        <!-- Inline Calendar View (initially hidden) -->
                        <div id="calendarView" class="custom-calendar hidden">
                            <div class="custom-calendar-header">
@@ -425,7 +400,7 @@
                                <!-- Kalender dagen worden hier dynamisch ingevuld -->
                            </div>
                            
-                           <!-- Added sync button -->
+                           <!-- Refresh button -->
                            <button type="button" id="calendarSyncButton" class="sync-button" onclick="manualSyncCalendars()">
                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -433,10 +408,10 @@
                                Vernieuwen
                            </button>
                            
-                           <!-- Added sync indicator -->
+                           <!-- Sync indicator (will rarely be shown in this version) -->
                            <div id="syncIndicator" class="sync-indicator">
                                <div class="sync-spinner"></div>
-                               <span>Agenda's synchroniseren...</span>
+                               <span>Kalender bijwerken...</span>
                            </div>
                        </div>
                    </div>
@@ -590,392 +565,50 @@
    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
    
    <script>
-       // Kalender URLs en ID's
+       // Configuratie voor de strandcabines
        const calendarConfig = {
            1: {
                name: "Strandcabine 1",
-               outlookId: "f4c108f9-ae36-4c31-b132-2049d9a0d9f9",
-               viewUrl: "https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/f4c108f9-ae36-4c31-b132-2049d9a0d9f9/cid-249909C222CBB60C/index.html"
+               // Hier kunt u handmatig bezette data toevoegen in formaat "YYYY-MM-DD"
+               busyDates: [
+                   // Voorbeeld: "2025-04-10", "2025-04-11", "2025-04-12"
+               ]
            },
            2: {
                name: "Strandcabine 2",
-               outlookId: "1a338984-2500-4622-8b32-fa46fc73bdcb",
-               viewUrl: "https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/1a338984-2500-4622-8b32-fa46fc73bdcb/cid-249909C222CBB60C/index.html"
+               // Hier kunt u handmatig bezette data toevoegen in formaat "YYYY-MM-DD"
+               busyDates: [
+                   // Voorbeeld: "2025-04-15", "2025-04-16", "2025-04-17"
+               ]
            }
        };
        
-       // Microsoft Graph API app registratie
-       const msalConfig = {
-           auth: {
-               clientId: "VOER_HIER_UW_CLIENT_ID_IN", // Vul hier de client ID in van uw Azure app registratie
-               authority: "https://login.microsoftonline.com/common",
-               redirectUri: window.location.origin,
-           },
-           cache: {
-               cacheLocation: "sessionStorage", // Caches gebruikerstokens in de sessie
-               storeAuthStateInCookie: false, 
-           }
-       };
-       
-       // Microsoft Graph API scopes
-       const graphScopes = ["Calendars.Read"];
-       
-       let msalInstance = null;
        let activeCabinId = null;
        let formData = {};
        let currentViewDate = new Date(2025, 3, 1); // 1 april 2025
        let selectedStartDate = null;
        let selectedEndDate = null;
        let calendarVisible = false;
-       let isAuthenticated = false;
        
-       // Global variables voor kalender beschikbaarheid
-       let cabinAvailability = {
-           1: {}, // Voor strandcabine 1
-           2: {}  // Voor strandcabine 2
-       };
-       let lastSyncTime = null;
-       let isSyncing = false;
-       
-       // Initialiseer MSAL auth
-       function initMSAL() {
-           try {
-               if (!msalInstance && window.msal) {
-                   msalInstance = new msal.PublicClientApplication(msalConfig);
-                   
-                   // Check of er al een actief account is
-                   const accounts = msalInstance.getAllAccounts();
-                   if (accounts.length > 0) {
-                       isAuthenticated = true;
-                   }
-                   
-                   // Handle de redirect van auth flow
-                   msalInstance.handleRedirectPromise()
-                       .then(handleRedirectResponse)
-                       .catch(error => {
-                           console.error("MSAL redirect handling error:", error);
-                       });
-               }
-           } catch (error) {
-               console.error("Error initializing MSAL:", error);
-           }
-       }
-       
-       // Handle de redirect response van auth flow
-       function handleRedirectResponse(response) {
-           if (response !== null) {
-               isAuthenticated = true;
-               // Als we net zijn ingelogd, ververs de kalender
-               if (calendarVisible && activeCabinId) {
-                   syncAllCabinCalendars(true);
-               }
-           } else {
-               const accounts = msalInstance?.getAllAccounts() || [];
-               if (accounts.length > 0) {
-                   isAuthenticated = true;
-               }
-           }
-           
-           updateAuthUI();
-       }
-       
-       // Update de UI gebaseerd op auth status
-       function updateAuthUI() {
-           const authWarning = document.getElementById('authWarning');
-           if (authWarning) {
-               if (!isAuthenticated) {
-                   authWarning.classList.add('active');
-               } else {
-                   authWarning.classList.remove('active');
-               }
-           }
-       }
-       
-       // Autoriseer kalender access
-       function authorizeCalendar() {
-           if (!msalInstance) {
-               initMSAL();
-               if (!msalInstance) {
-                   alert("Microsoft Authentication Library kon niet worden geladen. Probeer het later opnieuw of neem contact met ons op.");
-                   return;
-               }
-           }
-           
-           const accounts = msalInstance.getAllAccounts();
-           if (accounts.length === 0) {
-               // Niet ingelogd, start login flow
-               msalInstance.loginRedirect({
-                   scopes: graphScopes,
-                   prompt: "select_account"
-               });
-           } else {
-               // Al ingelogd
-               isAuthenticated = true;
-               updateAuthUI();
-               
-               // Start kalender sync
-               if (calendarVisible && activeCabinId) {
-                   syncAllCabinCalendars(true);
-               }
-           }
-       }
-       
-       // Functie om Microsoft Graph API token te verkrijgen
-       async function getGraphToken() {
-           if (!msalInstance || !isAuthenticated) {
-               return null;
-           }
-           
-           try {
-               const accounts = msalInstance.getAllAccounts();
-               if (accounts.length === 0) {
-                   return null;
-               }
-               
-               const account = accounts[0];
-               const silentRequest = {
-                   scopes: graphScopes,
-                   account: account,
-                   forceRefresh: false
-               };
-               
-               const response = await msalInstance.acquireTokenSilent(silentRequest);
-               return response.accessToken;
-           } catch (error) {
-               console.error("Error acquiring token:", error);
-               if (error instanceof msal.InteractionRequiredAuthError) {
-                   // Token is verlopen of er is een andere auth error, vraag gebruiker om opnieuw in te loggen
-                   try {
-                       await msalInstance.acquireTokenRedirect({
-                           scopes: graphScopes,
-                           prompt: "select_account"
-                       });
-                   } catch (redirectError) {
-                       console.error("Error during redirect:", redirectError);
-                   }
-               }
-               return null;
-           }
-       }
-       
-       // Functie om Outlook agenda events op te halen via Microsoft Graph API
-       async function fetchOutlookCalendarEvents(cabinId, startDate, endDate) {
-           if (!isAuthenticated) {
-               showAuthWarning();
-               return [];
-           }
-           
-           try {
-               // Krijg access token
-               const token = await getGraphToken();
-               if (!token) {
-                   showAuthWarning();
-                   return [];
-               }
-               
-               console.log(`Ophalen van agenda-events voor cabine ${cabinId} van ${startDate} tot ${endDate}`);
-               
-               // Formatteer datums voor de API
-               const formattedStartDate = startDate.toISOString();
-               const formattedEndDate = endDate.toISOString();
-               
-               // Kalender ID uit de config halen
-               const calendarId = calendarConfig[cabinId].outlookId;
-               
-               // Microsoft Graph API endpoint voor kalender events
-               const endpoint = `https://graph.microsoft.com/v1.0/me/calendars/${calendarId}/calendarView?startDateTime=${formattedStartDate}&endDateTime=${formattedEndDate}`;
-               
-               const response = await fetch(endpoint, {
-                   method: 'GET',
-                   headers: {
-                       'Authorization': `Bearer ${token}`,
-                       'Content-Type': 'application/json'
-                   }
-               });
-               
-               if (!response.ok) {
-                   const errorText = await response.text();
-                   throw new Error(`API error (${response.status}): ${errorText}`);
-               }
-               
-               const data = await response.json();
-               return data.value; // Array van events
-           } catch (error) {
-               console.error("Error fetching Outlook calendar events:", error);
-               
-               // Als de error gerelateerd is aan authenticatie, reset auth status
-               if (error.message && (error.message.includes('401') || error.message.includes('403'))) {
-                   isAuthenticated = false;
-                   updateAuthUI();
-               }
-               
-               // Geef lege array terug in geval van error
-               return [];
-           }
-       }
-       
-       // Toon auth waarschuwing en reset status
-       function showAuthWarning() {
-           isAuthenticated = false;
-           updateAuthUI();
-       }
-       
-       // Functie om kalender beschikbaarheid te synchroniseren voor een specifieke cabine
-       async function syncCabinAvailability(cabinId, forceRefresh = false) {
-           try {
-               // Stel synchronisatie periode in - we synchroniseren het verhuurseizoen
-               const syncStartDate = new Date(2025, 3, 1); // 1 april 2025
-               const syncEndDate = new Date(2025, 8, 30);  // 30 september 2025
-               
-               // Haal events op van Outlook
-               const events = await fetchOutlookCalendarEvents(cabinId, syncStartDate, syncEndDate);
-               
-               // Verwerk events en update beschikbaarheidskaart
-               processCalendarEvents(cabinId, events, syncStartDate, syncEndDate);
-               
-               console.log(`Beschikbaarheid gesynchroniseerd voor cabine ${cabinId}`);
-               return true;
-           } catch (error) {
-               console.error(`Fout bij synchroniseren van beschikbaarheid voor cabine ${cabinId}:`, error);
-               return false;
-           }
-       }
-
-       // Functie om kalender events te verwerken en de beschikbaarheidskaart bij te werken
-       function processCalendarEvents(cabinId, events, startDate, endDate) {
-           // Initialiseer alle datums als beschikbaar
-           const currentDate = new Date(startDate);
-           while (currentDate <= endDate) {
-               const dateString = formatDateYYYYMMDD(new Date(currentDate));
-               cabinAvailability[cabinId][dateString] = true; // true betekent beschikbaar
-               currentDate.setDate(currentDate.getDate() + 1);
-           }
-           
-           // Markeer bezette datums op basis van events
-           events.forEach(event => {
-               // Alleen events met showAs "busy" of "tentative" of "oof" markeren als bezet
-               const showAs = event.showAs.toLowerCase();
-               if (showAs === "busy" || showAs === "tentative" || showAs === "oof" || showAs === "workingelsewhere") {
-                   const start = new Date(event.start.dateTime);
-                   const end = new Date(event.end.dateTime);
-                   
-                   // Voor elke dag in het event bereik, markeer als bezet
-                   const dayStart = new Date(start);
-                   dayStart.setHours(0, 0, 0, 0); // Begin van de dag
-                   
-                   const dayEnd = new Date(end);
-                   dayEnd.setHours(0, 0, 0, 0); // Begin van de dag
-                   
-                   for (let date = new Date(dayStart); date <= dayEnd; date.setDate(date.getDate() + 1)) {
-                       const dateString = formatDateYYYYMMDD(date);
-                       cabinAvailability[cabinId][dateString] = false; // false betekent bezet/niet beschikbaar
-                   }
-               }
-           });
-       }
-
-       // Bijgewerkte isDateBusyInOutlook functie om de gesynchroniseerde data te gebruiken
-       function isDateBusyInOutlook(cabinId, date) {
+       // Functie om te controleren of een datum bezet is
+       function isDateBusy(cabinId, date) {
            const dateString = formatDateYYYYMMDD(date);
-           
-           // Als we data hebben voor deze datum in onze cache, gebruik het
-           if (dateString in cabinAvailability[cabinId]) {
-               return !cabinAvailability[cabinId][dateString]; // Geeft true terug als de datum bezet is
-           }
-           
-           // Als we geen data hebben, ga ervan uit dat het beschikbaar is (wordt bijgewerkt tijdens synchronisatie)
-           return false;
-       }
-
-       // Functie om alle cabine kalenders te synchroniseren
-       async function syncAllCabinCalendars(forceRefresh = false) {
-           // Als al aan het synchroniseren, start geen nieuwe sync
-           if (isSyncing) return false;
-           
-           isSyncing = true;
-           
-           try {
-               // Controleer of we moeten synchroniseren (als niet geforceerd en we recent hebben gesynchroniseerd)
-               const now = new Date();
-               if (!forceRefresh && lastSyncTime && (now - lastSyncTime < 5 * 60 * 1000)) {
-                   // Als laatste sync minder dan 5 minuten geleden was en geen force refresh,
-                   // synchroniseer niet opnieuw
-                   console.log("Gebruik van gecachte kalenderdata (gesynchroniseerd in de laatste 5 minuten)");
-                   isSyncing = false;
-                   return true;
-               }
-               
-               // Toon synchronisatie indicator
-               showSyncingIndicator();
-               
-               // Synchroniseer alle cabines
-               const results = await Promise.all([
-                   syncCabinAvailability(1, forceRefresh),
-                   syncCabinAvailability(2, forceRefresh)
-               ]);
-               
-               // Update laatste synchronisatie tijd
-               lastSyncTime = now;
-               
-               // Verberg synchronisatie indicator
-               hideSyncingIndicator();
-               
-               // Update de kalenderweergave om nieuwe beschikbaarheid weer te geven
-               if (calendarVisible) {
-                   renderCalendar();
-               }
-               
-               // Als alle synchronisaties succesvol waren
-               isSyncing = false;
-               return results.every(result => result === true);
-           } catch (error) {
-               console.error("Error bij het synchroniseren van kalenders:", error);
-               isSyncing = false;
-               
-               // Verberg synchronisatie indicator
-               hideSyncingIndicator();
-               
-               return false;
-           }
-       }
-
-       // Functies voor synchronisatie indicators
-       function showSyncingIndicator() {
-           const indicator = document.getElementById('syncIndicator');
-           if (indicator) {
-               indicator.classList.add('active');
-           }
-       }
-
-       function hideSyncingIndicator() {
-           const indicator = document.getElementById('syncIndicator');
-           if (indicator) {
-               indicator.classList.remove('active');
-           }
-       }
-       
-       // Functie voor handmatige kalender synchronisatie (geactiveerd door de gebruiker)
-       function manualSyncCalendars() {
-           if (!isAuthenticated) {
-               authorizeCalendar();
-               return;
-           }
-           
-           syncAllCabinCalendars(true); // Force refresh
+           return calendarConfig[cabinId].busyDates.includes(dateString);
        }
        
        // Functie om te controleren of een datumbereik volledig beschikbaar is
        function isDateRangeAvailable(cabinId, startDate, endDate) {
            // Voor elke dag in het bereik, controleren of deze bezet is
            for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
-               if (isDateBusyInOutlook(cabinId, date)) {
+               if (isDateBusy(cabinId, date)) {
                    return false; // Als één dag bezet is, is het bereik niet beschikbaar
                }
            }
            
            return true; // Alle dagen zijn beschikbaar
        }
-      // Datum-helper functies
+       
+       // Datum-helper functies
        function formatDate(date) {
            return date.toLocaleDateString('nl-BE', { 
                day: '2-digit', 
@@ -1036,7 +669,7 @@
                
                // Controleer beschikbaarheid als we een actieve cabin hebben
                if (activeCabinId) {
-                   const isBusy = isDateBusyInOutlook(activeCabinId, prevMonthDate);
+                   const isBusy = isDateBusy(activeCabinId, prevMonthDate);
                    if (isBusy) {
                        prevMonthDay.classList.add('unavailable');
                    }
@@ -1065,7 +698,7 @@
                
                // Controleer beschikbaarheid als we een actieve cabin hebben
                if (activeCabinId) {
-                   const isBusy = isDateBusyInOutlook(activeCabinId, date);
+                   const isBusy = isDateBusy(activeCabinId, date);
                    if (isBusy) {
                        dayElement.classList.add('unavailable');
                    }
@@ -1101,7 +734,7 @@
                
                // Controleer beschikbaarheid als we een actieve cabin hebben
                if (activeCabinId) {
-                   const isBusy = isDateBusyInOutlook(activeCabinId, nextMonthDate);
+                   const isBusy = isDateBusy(activeCabinId, nextMonthDate);
                    if (isBusy) {
                        nextMonthDay.classList.add('unavailable');
                    }
@@ -1127,29 +760,14 @@
            if (calendarVisible) {
                calendarView.classList.remove('hidden');
                renderCalendar();
-               
-               // Update auth UI
-               updateAuthUI();
-               
-               // Sync calendars when the view is opened (if authenticated)
-               if (isAuthenticated) {
-                   syncAllCabinCalendars();
-               }
            } else {
                calendarView.classList.add('hidden');
            }
        }
-       
-       // Datum selectie functie
+// Functie die wordt aangeroepen wanneer we een datum selecteren
        function selectDate(date) {
-           // Als niet geauthenticeerd, vraag om autorisatie
-           if (!isAuthenticated) {
-               authorizeCalendar();
-               return;
-           }
-           
            // Controleer beschikbaarheid als we een actieve cabin hebben
-           if (activeCabinId && isDateBusyInOutlook(activeCabinId, date)) {
+           if (activeCabinId && isDateBusy(activeCabinId, date)) {
                // Toon foutmelding als de datum bezet is
                const message = document.getElementById('dateAvailabilityMessage');
                message.textContent = 'Deze datum is niet beschikbaar.';
@@ -1299,6 +917,7 @@
            document.getElementById('selectedDateDisplay').placeholder = hint;
        }
 
+       // Functie om het boekingsmodal te openen
        function openBooking(cabinId) {
            activeCabinId = cabinId;
            document.getElementById('cabinId').value = cabinId;
@@ -1314,9 +933,19 @@
            
            // Update kalenderweergave op basis van de geselecteerde periode
            updateCalendarView();
+       }
+
+       // Functie voor het vernieuwen van de kalender
+       function manualSyncCalendars() {
+           // Toon kort de sync indicator
+           const indicator = document.getElementById('syncIndicator');
+           indicator.classList.add('active');
            
-           // Update auth UI
-           updateAuthUI();
+           // Verberg de sync indicator na 500ms en herlaad de kalender
+           setTimeout(() => {
+               indicator.classList.remove('active');
+               renderCalendar();
+           }, 500);
        }
 
        function closeModal() {
@@ -1411,9 +1040,6 @@
                if (response.ok) {
                    // Toon ID-uploadmodal na succesvolle formulierinzending
                    showIdUploadModal();
-                   
-                   // Indien succesvol, update de kalender in Outlook (TODO in echte implementatie)
-                   // createOutlookBookingEvent(formData);
                } else {
                    // Foutafhandeling
                    alert('Er ging iets mis. Probeer het later opnieuw of neem contact met ons op.');
@@ -1437,9 +1063,6 @@
 
        // Initialiseer de applicatie wanneer het document geladen is
        document.addEventListener('DOMContentLoaded', function() {
-           // Initialiseer MSAL voor Microsoft Graph API
-           initMSAL();
-           
            // Coördinaten: 51°19'04.1"N 3°07'58.5"E = 51.317806, 3.132917
            const lat = 51.317806;
            const lng = 3.132917;
@@ -1473,4 +1096,8 @@
        });
    </script>
 </body>
-</html>
+</html>   
+   
+   
+   
+   
