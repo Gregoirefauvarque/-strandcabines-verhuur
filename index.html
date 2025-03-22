@@ -142,7 +142,7 @@
                </div>
            </div>
        </div>
-      <!-- Locatie Sectie -->
+       <!-- Locatie Sectie -->
        <div class="mt-12 bg-white rounded-xl shadow-lg p-6">
            <h2 class="text-2xl font-bold text-blue-900 mb-4">Locatie</h2>
            <div class="text-gray-600 mb-4">
@@ -161,24 +161,73 @@
            </div>
        </div>
 
-       <!-- Betalingsinformatie, Privacy en Contact secties (ongewijzigd) -->
+       <!-- Betalingsinformatie -->
        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
            <h2 class="text-2xl font-bold text-blue-900 mb-4">Betalingsinformatie</h2>
-           <!-- Inhoud ongewijzigd -->
+           <div class="text-gray-600">
+               <p class="mb-4">Het reserverings- en betalingsproces verloopt als volgt:</p>
+               <ol class="list-decimal list-inside space-y-2 mb-6">
+                   <li>U vult het reserveringsformulier in en uploadt uw ID</li>
+                   <li>U wordt doorverwezen naar onze veilige betaalomgeving</li>
+                   <li>Na betaling is uw reservering direct bevestigd</li>
+                   <li>U ontvangt een bevestigingsmail met alle details</li>
+               </ol>
+               
+               <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                   <h3 class="font-semibold text-yellow-800 mb-2">Belangrijk:</h3>
+                   <ul class="list-disc list-inside space-y-1">
+                       <li>Alle betalingen verlopen veilig via Stripe</li>
+                       <li>U kunt betalen met creditcard, Bancontact of iDEAL</li>
+                       <li>Annuleringsvoorwaarden:
+                           <ul class="ml-6 mt-1 space-y-1">
+                               <li>Bij annulering meer dan 30 dagen voor aankomst: volledige terugbetaling</li>
+                               <li>Bij annulering minder dan 30 dagen voor aankomst: 50% van het betaalde bedrag wordt ingehouden</li>
+                           </ul>
+                       </li>
+                   </ul>
+               </div>
+           </div>
        </div>
 
+       <!-- Beveiliging en Privacy -->
        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
            <h2 class="text-2xl font-bold text-blue-900 mb-4">Beveiliging & Privacy</h2>
-           <!-- Inhoud ongewijzigd -->
+           <div class="text-gray-600">
+               <p class="mb-2">Voor uw en onze veiligheid vragen wij om een kopie van uw identiteitskaart bij elke reservering.</p>
+               <p class="mb-2">Uw gegevens worden vertrouwelijk behandeld in overeenstemming met de AVG/GDPR regelgeving:</p>
+               <ul class="list-disc list-inside space-y-1 mb-4">
+                   <li>Uw ID wordt alleen gebruikt voor identiteitsverificatie</li>
+                   <li><strong class="text-blue-800">Uw ID-kopie wordt uitsluitend bewaard gedurende uw huurperiode plus 2 dagen, waarna deze permanent wordt verwijderd</strong></li>
+                   <li>Uw ID-kopie wordt veilig opgeslagen in een beveiligde Google Drive map met tweefactorauthenticatie</li>
+                   <li>Betalingsgegevens worden verwerkt door Stripe, een gecertificeerde en veilige betalingsverwerker</li>
+                   <li>Wij hebben geen toegang tot uw volledige kaartgegevens</li>
+                   <li>Uw gegevens worden niet gedeeld met derden</li>
+               </ul>
+               <p class="text-sm italic">Voor vragen over hoe wij omgaan met uw persoonsgegevens, kunt u altijd contact met ons opnemen.</p>
+           </div>
        </div>
 
+       <!-- Contact Informatie -->
        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
            <h2 class="text-2xl font-bold text-blue-900 mb-4">Contact Informatie</h2>
-           <!-- Inhoud ongewijzigd -->
+           <div class="flex flex-col md:flex-row md:space-x-8">
+               <div class="flex-1 mb-4 md:mb-0">
+                   <h3 class="font-semibold text-blue-800 mb-2">Contacteer ons</h3>
+                   <p class="text-gray-600">Voor meer informatie of vragen, neem gerust contact met ons op:</p>
+                   <ul class="mt-2 space-y-1 text-gray-600">
+                       <li>Telefoon: <a href="tel:+32474662781" class="text-blue-600 hover:underline">+32 474 662781</a></li>
+                       <li>E-mail: <a href="mailto:gregoirefauvarque@hotmail.be" class="text-blue-600 hover:underline">gregoirefauvarque@hotmail.be</a></li>
+                   </ul>
+               </div>
+               <div class="flex-1">
+                   <h3 class="font-semibold text-blue-800 mb-2">Routebeschrijving</h3>
+                   <p class="text-gray-600">De strandcabines zijn gemakkelijk bereikbaar vanaf het centrum van Blankenberge. Volg de kustlijn en u vindt onze cabines aan het aangegeven punt op de kaart.</p>
+               </div>
+           </div>
        </div>
    </div>
 
-   <!-- Calendar Modal - NIEUW -->
+   <!-- Calendar Modal -->
    <div id="calendarModal" class="modal">
        <div class="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
            <h2 id="calendarTitle" class="text-2xl font-bold mb-4">Beschikbaarheid Strandcabine</h2>
@@ -197,7 +246,7 @@
        </div>
    </div>
 
-   <!-- Booking Modal (aangepast) -->
+   <!-- Booking Modal -->
    <div id="bookingModal" class="modal">
        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
            <h2 id="modalTitle" class="text-2xl font-bold mb-6">Reserveer Strandcabine</h2>
@@ -252,7 +301,22 @@
                    <textarea name="message" class="w-full p-2 border rounded" rows="3"></textarea>
                </div>
                
-               <!-- Rest van de formulierinterfaceonderdelen ongewijzigd -->
+               <div class="p-4 bg-blue-50 rounded border mt-2">
+                   <p class="font-medium text-blue-800">Volgende stappen:</p>
+                   <p class="text-gray-600">Na het indienen van dit formulier wordt u doorverwezen naar:</p>
+                   <ol class="list-decimal list-inside text-sm text-gray-600 mt-2">
+                       <li>Een beveiligde pagina om uw ID te uploaden</li>
+                       <li>Een beveiligde betaalpagina om direct de reservering te voltooien</li>
+                   </ol>
+               </div>
+               
+               <div class="mt-4">
+                   <label class="flex items-start">
+                       <input type="checkbox" required name="terms_consent" class="mt-1 mr-2">
+                       <span class="text-sm text-gray-600">Ik ga akkoord met de huurvoorwaarden en privacy beleid.*</span>
+                   </label>
+               </div>
+
                <div class="flex gap-4 mt-8">
                    <button id="submitBtn" type="submit" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
                        Reserveer
@@ -265,18 +329,109 @@
        </div>
    </div>
 
-   <!-- ID Upload Modal en Payment Modal (ongewijzigd) -->
+   <!-- ID Upload Modal -->
    <div id="idUploadModal" class="modal">
-       <!-- Inhoud ongewijzigd -->
+       <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
+           <h2 class="text-2xl font-bold mb-6">Upload uw identiteitskaart</h2>
+           
+           <div class="text-gray-600 mb-6">
+               <p>Uw reservering is bijna voltooid! Om het proces af te ronden, dient u uw identiteitskaart te uploaden via ons beveiligde formulier.</p>
+               <p class="mt-2 text-sm font-medium text-blue-800">Deze kopie wordt uitsluitend bewaard gedurende uw huurperiode plus 2 dagen, waarna deze permanent wordt verwijderd.</p>
+           </div>
+           
+           <a href="https://docs.google.com/forms/d/e/1FAIpQLSdY_-rAZzOolLgfscXgCmKEuNLDrHlj2bmuWurnw92NJk6MNQ/viewform?usp=header" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+               Upload uw ID via Google Forms
+           </a>
+           
+           <p class="text-sm text-gray-500 mt-4">Na het uploaden van uw ID via Google Forms, klik op de onderstaande knop om naar de betaalpagina te gaan.</p>
+           
+           <div class="flex gap-4 mt-6">
+               <button type="button" onclick="showPaymentOptions()" class="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                   ID Geüpload, Ga naar Betaling
+               </button>
+               <button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300">
+                   Annuleer
+               </button>
+           </div>
+       </div>
    </div>
    
+   <!-- Payment Modal -->
    <div id="paymentModal" class="modal">
-       <!-- Inhoud ongewijzigd -->
+       <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
+           <h2 class="text-2xl font-bold mb-6">Betaling</h2>
+           
+           <div class="text-gray-600 mb-6">
+               <p>Selecteer de betaallink die overeenkomt met uw reservering:</p>
+           </div>
+           
+           <div class="space-y-4">
+               <div id="payment-week" class="hidden">
+                   <a href="https://buy.stripe.com/00g3cv3qVbTv2UE289" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor Week verhuur (€105)
+                   </a>
+               </div>
+               
+               <div id="payment-twoWeeks" class="hidden">
+                   <a href="https://buy.stripe.com/6oE28r0eJ4r3cvefZ0" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor 2 Weken (€205)
+                   </a>
+               </div>
+               
+               <div id="payment-monthApril" class="hidden">
+                   <a href="https://buy.stripe.com/5kA8wPe5z8Hj7aU5kn" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor April (€355)
+                   </a>
+               </div>
+               
+               <div id="payment-monthMay" class="hidden">
+                   <a href="https://buy.stripe.com/28o5kDaTng9L7aUfZ2" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor Mei (€410)
+                   </a>
+               </div>
+               
+               <div id="payment-monthSummer" class="hidden">
+                   <a href="https://buy.stripe.com/5kA9ATd1v9LneDm28d" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor Juni-Augustus (€510)
+                   </a>
+               </div>
+               
+               <div id="payment-monthSeptember" class="hidden">
+                   <a href="https://buy.stripe.com/3cs4gz3qV6zbdzi5kr" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor September (€355)
+                   </a>
+               </div>
+               
+               <div id="payment-season" class="hidden">
+                   <a href="https://buy.stripe.com/eVadR9aTn7DfeDm4gm" target="_blank" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                       Betaal voor Heel Seizoen (€1825)
+                   </a>
+               </div>
+           </div>
+           
+           <p class="text-sm text-gray-500 mt-4">Na betaling wordt u automatisch teruggestuurd naar deze website voor bevestiging.</p>
+           
+           <div class="flex gap-4 mt-6">
+               <button type="button" onclick="showConfirmation()" class="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                   Betaling Voltooid
+               </button>
+               <button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300">
+                   Annuleer
+               </button>
+           </div>
+       </div>
    </div>
 
-   <!-- Confirmation Modal (ongewijzigd) -->
+   <!-- Confirmation Modal -->
    <div id="confirmationModal" class="modal">
-       <!-- Inhoud ongewijzigd -->
+       <div class="bg-white rounded-xl p-8 max-w-md w-full m-auto text-center">
+           <h2 class="text-2xl font-bold mb-4">Bedankt voor uw reservering!</h2>
+           <p class="text-gray-600 mb-4">Uw reservering en betaling zijn succesvol verwerkt. U ontvangt binnen enkele minuten een bevestigingsmail met alle details.</p>
+           <p class="text-sm text-blue-800 mt-4">Uw ID-kopie wordt veilig bewaard en automatisch verwijderd na uw huurperiode + 2 dagen.</p>
+           <button onclick="closeAllModals()" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+               Sluiten
+           </button>
+       </div>
    </div>
 
    <footer class="bg-blue-900 text-white py-6 mt-12">
@@ -294,38 +449,58 @@
            2: "https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/1a338984-2500-4622-8b32-fa46fc73bdcb/cid-249909C222CBB60C/index.html"
        };
        
-       // Nadat we de kalender hebben geraadpleegd, simuleren we een database met bezette dagen
-       // Dit zal in een echte implementatie worden vervangen door API-calls naar de Outlook-kalender
-       // of een database die wordt gesynchroniseerd met de Outlook-kalender
-       const occupiedDates = {
-           1: [], // Voor strandcabine 1
-           2: []  // Voor strandcabine 2
-       };
-       
-       // In werkelijkheid zou u een API moeten maken die de bezette dagen uit de Outlook-kalender haalt
-       // Voor de demo simuleren we een paar bezette dagen
-       function initializeOccupiedDates() {
-           // Simuleer enkele bezette dagen voor strandcabine 1
-           occupiedDates[1] = [
-               "2025-04-01", "2025-04-02", "2025-04-03", "2025-04-04", "2025-04-05", "2025-04-06", "2025-04-07",
-               "2025-05-12", "2025-05-13", "2025-05-14", "2025-05-15", "2025-05-16", "2025-05-17", "2025-05-18"
-           ];
-           
-           // Simuleer enkele bezette dagen voor strandcabine 2
-           occupiedDates[2] = [
-               "2025-04-15", "2025-04-16", "2025-04-17", "2025-04-18", "2025-04-19", "2025-04-20", "2025-04-21",
-               "2025-06-01", "2025-06-02", "2025-06-03", "2025-06-04", "2025-06-05", "2025-06-06", "2025-06-07"
-           ];
-       }
-       
        let activeCabinId = null;
        let formData = {};
 
-       // Initialiseer de kaart en bezette data wanneer het document geladen is
-       document.addEventListener('DOMContentLoaded', function() {
-           // Initialiseer bezette data
-           initializeOccupiedDates();
+       // API om bezette data te controleren (in productie zou dit een echte API-call zijn)
+       async function checkBusynessFromOutlook(cabinId, date) {
+           // In een echte implementatie zou u hier een API-aanroep doen naar uw server
+           // De server zou dan de Outlook-kalender controleren op de aanwezigheid van "bezet" items
+           // Voor deze demo simuleren we deze functionaliteit
            
+           const dateStr = new Date(date).toISOString().split('T')[0];
+           
+           // Simuleer een vertraging zoals bij een echte API-aanroep
+           await new Promise(resolve => setTimeout(resolve, 200));
+           
+           // Simuleer een aantal "bezet"-gebeurtenissen in de Outlook-kalender
+           // Deze zouden in werkelijkheid uit de Outlook-kalender gehaald worden
+           const bookedDates = {
+               1: [ // Bezette datums voor strandcabine 1
+                   "2025-05-05", "2025-05-06", "2025-05-07", "2025-05-08",
+                   "2025-06-12", "2025-06-13", "2025-06-14", "2025-06-15",
+                   "2025-07-20", "2025-07-21", "2025-07-22", "2025-07-23"
+               ],
+               2: [ // Bezette datums voor strandcabine 2
+                   "2025-04-15", "2025-04-16", "2025-04-17", "2025-04-18",
+                   "2025-06-01", "2025-06-02", "2025-06-03", "2025-06-04",
+                   "2025-08-10", "2025-08-11", "2025-08-12", "2025-08-13"
+               ]
+           };
+           
+           // Controleer of de datum bezet is
+           return bookedDates[cabinId].includes(dateStr);
+       }
+       
+       // Functie om alle bezette data voor een periode te controleren
+       async function checkPeriodAvailability(cabinId, startDate, endDate) {
+           // Converteren naar datumobjecten
+           const start = new Date(startDate);
+           const end = new Date(endDate);
+           
+           // Voor elke dag in de periode, controleer of deze bezet is
+           for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+               const isBusy = await checkBusynessFromOutlook(cabinId, date);
+               if (isBusy) {
+                   return false; // Indien één dag bezet is, is de periode niet beschikbaar
+               }
+           }
+           
+           return true; // Alle dagen zijn beschikbaar
+       }
+
+       // Initialiseer de kaart wanneer het document geladen is
+       document.addEventListener('DOMContentLoaded', function() {
            // Coördinaten: 51°19'04.1"N 3°07'58.5"E = 51.317806, 3.132917
            const lat = 51.317806;
            const lng = 3.132917;
@@ -370,6 +545,9 @@
            
            // Verberg foutberichten
            document.getElementById('dateAvailabilityMessage').classList.add('hidden');
+           
+           // Update datumopties op basis van geselecteerde periode
+           updateDateRangeOptions();
        }
 
        function closeModal() {
@@ -378,6 +556,7 @@
            document.getElementById('paymentModal').classList.remove('active');
            document.getElementById('confirmationModal').classList.remove('active');
            document.getElementById('calendarModal').classList.remove('active');
+           
            const form = document.getElementById('bookingForm');
            if (form) form.reset();
        }
@@ -388,27 +567,95 @@
            document.getElementById('paymentModal').classList.remove('active');
            document.getElementById('confirmationModal').classList.remove('active');
            document.getElementById('calendarModal').classList.remove('active');
+           
            const form = document.getElementById('bookingForm');
            if (form) form.reset();
            formData = {};
        }
        
        // Functie om de beschikbaarheid van een datum te controleren
-       function checkDateAvailability() {
+       async function checkDateAvailability() {
            const dateInput = document.getElementById('startDateInput');
            const selectedDate = dateInput.value;
            const errorMessage = document.getElementById('dateAvailabilityMessage');
            const submitBtn = document.getElementById('submitBtn');
            
-           // Als de datum in de lijst van bezette dagen staat, toon een foutmelding
-           if (occupiedDates[activeCabinId].includes(selectedDate)) {
+           if (!selectedDate) return;
+           
+           // Visuele feedback tijdens het controleren
+           dateInput.classList.add('bg-gray-100');
+           submitBtn.disabled = true;
+           
+           try {
+               // Bereken de einddatum op basis van de geselecteerde periode
+               const periodSelect = document.getElementById('periodSelect');
+               const selectedPeriod = periodSelect.value;
+               
+               let endDate;
+               switch (selectedPeriod) {
+                   case 'week':
+                       endDate = new Date(selectedDate);
+                       endDate.setDate(endDate.getDate() + 6); // 7 dagen (inclusief startdag)
+                       break;
+                   case 'twoWeeks':
+                       endDate = new Date(selectedDate);
+                       endDate.setDate(endDate.getDate() + 13); // 14 dagen (inclusief startdag)
+                       break;
+                   case 'monthApril':
+                       endDate = new Date(2025, 3, 30); // 30 april 2025
+                       break;
+                   case 'monthMay':
+                       endDate = new Date(2025, 4, 31); // 31 mei 2025
+                       break;
+                   case 'monthSummer':
+                       // Controleer welke zomermaand is geselecteerd
+                       const startMonth = new Date(selectedDate).getMonth();
+                       if (startMonth === 5) { // Juni
+                           endDate = new Date(2025, 5, 30); // 30 juni 2025
+                       } else if (startMonth === 6) { // Juli
+                           endDate = new Date(2025, 6, 31); // 31 juli 2025
+                       } else { // Augustus
+                           endDate = new Date(2025, 7, 31); // 31 augustus 2025
+                       }
+                       break;
+                   case 'monthSeptember':
+                       endDate = new Date(2025, 8, 30); // 30 september 2025
+                       break;
+                   case 'season':
+                       endDate = new Date(2025, 8, 30); // 30 september 2025
+                       break;
+                   default:
+                       endDate = new Date(selectedDate);
+                       break;
+               }
+               
+               // Formateer de einddatum voor API-aanroep
+               const endDateStr = endDate.toISOString().split('T')[0];
+               
+               // Controleer of de geselecteerde periode beschikbaar is
+               const isAvailable = await checkPeriodAvailability(activeCabinId, selectedDate, endDateStr);
+               
+               if (!isAvailable) {
+                   // Periode is niet beschikbaar
+                   errorMessage.textContent = `Deze periode (${selectedDate} t/m ${endDateStr}) is niet beschikbaar.`;
+                   errorMessage.classList.remove('hidden');
+                   dateInput.classList.add('border-red-500');
+                   submitBtn.disabled = true;
+               } else {
+                   // Periode is beschikbaar
+                   errorMessage.classList.add('hidden');
+                   dateInput.classList.remove('border-red-500');
+                   submitBtn.disabled = false;
+               }
+           } catch (error) {
+               console.error('Fout bij het controleren van beschikbaarheid:', error);
+               // Bij een fout laten we de gebruiker doorgaan, maar tonen een waarschuwing
+               errorMessage.textContent = "Kon beschikbaarheid niet controleren. U kunt doorgaan, maar er is geen garantie dat deze periode beschikbaar is.";
                errorMessage.classList.remove('hidden');
-               submitBtn.disabled = true;
-               dateInput.classList.add('border-red-500');
-           } else {
-               errorMessage.classList.add('hidden');
                submitBtn.disabled = false;
-               dateInput.classList.remove('border-red-500');
+           } finally {
+               // Herstel visuele feedback
+               dateInput.classList.remove('bg-gray-100');
            }
        }
        
@@ -417,8 +664,9 @@
            const periodSelect = document.getElementById('periodSelect');
            const startDateInput = document.getElementById('startDateInput');
            
-           // Reset any error messages
+           // Reset foutberichten
            document.getElementById('dateAvailabilityMessage').classList.add('hidden');
+           startDateInput.classList.remove('border-red-500');
            
            const selectedPeriod = periodSelect.value;
            
@@ -434,7 +682,9 @@
                    break;
                case 'monthSummer':
                    startDateInput.value = '2025-06-01';
-                   startDateInput.disabled = true;
+                   startDateInput.disabled = false; // Gebruiker kan kiezen: juni, juli of augustus
+                   startDateInput.min = '2025-06-01';
+                   startDateInput.max = '2025-08-01';
                    break;
                case 'monthSeptember':
                    startDateInput.value = '2025-09-01';
@@ -446,11 +696,13 @@
                    break;
                default:
                    startDateInput.disabled = false;
+                   startDateInput.min = '2025-04-01';
+                   startDateInput.max = '2025-09-30';
                    break;
            }
            
-           // Controleer beschikbaarheid voor voorgeselecteerde datums
-           if (startDateInput.disabled) {
+           // Controleer beschikbaarheid voor voorgeselecteerde datums als er een datum is ingevuld
+           if (startDateInput.value) {
                checkDateAvailability();
            }
        }
@@ -464,12 +716,12 @@
            document.getElementById('idUploadModal').classList.remove('active');
            document.getElementById('paymentModal').classList.add('active');
            
-           // Hide all payment options first
+           // Verberg eerst alle betalingsopties
            document.querySelectorAll('#paymentModal [id^="payment-"]').forEach(el => {
                el.classList.add('hidden');
            });
            
-           // Show the relevant payment option based on period
+           // Toon de relevante betalingsoptie op basis van de periode
            if (formData.period) {
                const paymentDiv = document.getElementById(`payment-${formData.period}`);
                if (paymentDiv) {
@@ -483,21 +735,21 @@
            document.getElementById('confirmationModal').classList.add('active');
        }
 
-       // Handle form submission with Formspree
-       document.getElementById('bookingForm').addEventListener('submit', function(event) {
-           // Prevent default form submission to handle it ourselves
+       // Formulierverwerking met Formspree
+       document.getElementById('bookingForm').addEventListener('submit', async function(event) {
+           // Voorkom standaard formulierinzending om het zelf af te handelen
            event.preventDefault();
            
            // Controleer nog een keer de beschikbaarheid
            const dateInput = document.getElementById('startDateInput');
            const selectedDate = dateInput.value;
            
-           if (occupiedDates[activeCabinId].includes(selectedDate)) {
-               document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
-               return; // Stop de submission
+           if (!selectedDate) {
+               alert('Selecteer a.u.b. een startdatum.');
+               return;
            }
            
-           // Show loading state
+           // Toon laadstatus
            const form = this;
            form.classList.add('form-loading');
            
@@ -505,42 +757,52 @@
            submitBtn.disabled = true;
            submitBtn.textContent = 'Bezig met verzenden...';
            
-           // Store form data
-           const formDataObj = new FormData(form);
-           formData = {};
-           for (let [key, value] of formDataObj.entries()) {
-               formData[key] = value;
-           }
-           
-           // Submit form to Formspree
-           fetch(form.action, {
-               method: form.method,
-               body: formDataObj,
-               headers: {
-                   'Accept': 'application/json'
+           try {
+               // Voer een laatste beschikbaarheidscontrole uit
+               await checkDateAvailability();
+               
+               // Als de knop nog steeds uitgeschakeld is, is de datum niet beschikbaar
+               if (submitBtn.disabled) {
+                   alert('Deze periode is niet beschikbaar. Kies a.u.b. een andere datum.');
+                   form.classList.remove('form-loading');
+                   submitBtn.textContent = 'Reserveer';
+                   return;
                }
-           })
-           .then(response => {
+               
+               // Sla formuliergegevens op
+               const formDataObj = new FormData(form);
+               formData = {};
+               for (let [key, value] of formDataObj.entries()) {
+                   formData[key] = value;
+               }
+               
+               // Verstuur formulier naar Formspree
+               const response = await fetch(form.action, {
+                   method: form.method,
+                   body: formDataObj,
+                   headers: {
+                       'Accept': 'application/json'
+                   }
+               });
+               
                if (response.ok) {
-                   // Show ID upload modal after successful form submission
+                   // Toon ID-uploadmodal na succesvolle formulierinzending
                    showIdUploadModal();
                } else {
-                   // Handle error
+                   // Foutafhandeling
                    alert('Er ging iets mis. Probeer het later opnieuw of neem contact met ons op.');
                }
-           })
-           .catch(error => {
+           } catch (error) {
                console.error('Error:', error);
                alert('Er ging iets mis. Probeer het later opnieuw of neem contact met ons op.');
-           })
-           .finally(() => {
+           } finally {
                form.classList.remove('form-loading');
                submitBtn.disabled = false;
                submitBtn.textContent = 'Reserveer';
-           });
+           }
        });
 
-       // Close modals when clicking outside
+       // Sluit modals wanneer er buiten wordt geklikt
        window.onclick = function(event) {
            if (event.target.classList.contains('modal')) {
                closeModal();
