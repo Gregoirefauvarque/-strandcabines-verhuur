@@ -142,11 +142,6 @@
                        </div>
                    </div>
                    
-                   <!-- Calendar Button -->
-                   <button onclick="viewCalendar(1)" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors mb-2">
-                       Bekijk Beschikbaarheid
-                   </button>
-                   
                    <button onclick="openBooking(1)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
                        Reserveer Nu
                    </button>
@@ -185,11 +180,6 @@
                            <p class="mt-2 font-medium">Heel seizoen: €1825</p>
                        </div>
                    </div>
-                   
-                   <!-- Calendar Button -->
-                   <button onclick="viewCalendar(2)" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors mb-2">
-                       Bekijk Beschikbaarheid
-                   </button>
                    
                    <button onclick="openBooking(2)" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
                        Reserveer Nu
@@ -278,25 +268,6 @@
                    <h3 class="font-semibold text-blue-800 mb-2">Routebeschrijving</h3>
                    <p class="text-gray-600">De strandcabines zijn gemakkelijk bereikbaar vanaf het centrum van Blankenberge. Volg de kustlijn en u vindt onze cabines aan het aangegeven punt op de kaart.</p>
                </div>
-           </div>
-       </div>
-   </div>
-
-   <!-- Calendar Modal -->
-   <div id="calendarModal" class="modal">
-       <div class="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 my-8 md:m-auto overflow-auto max-h-screen">
-           <h2 id="calendarTitle" class="text-2xl font-bold mb-4">Beschikbaarheid Strandcabine</h2>
-           <p class="text-gray-600 mb-4">De datums die in de kalender zijn gemarkeerd als "bezet" zijn niet beschikbaar voor verhuur.</p>
-           
-           <iframe id="calendarFrame" class="calendar-container" frameborder="0"></iframe>
-           
-           <div class="flex justify-between mt-6">
-               <button onclick="openBooking(activeCabinId)" class="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">
-                   Reserveer Nu
-               </button>
-               <button onclick="closeModal()" class="bg-gray-200 text-gray-800 py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">
-                   Sluiten
-               </button>
            </div>
        </div>
    </div>
@@ -521,12 +492,6 @@
    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
    
    <script>
-       // Kalender URLs
-       const calendarUrls = {
-           1: "https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/f4c108f9-ae36-4c31-b132-2049d9a0d9f9/cid-249909C222CBB60C/index.html",
-           2: "https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/1a338984-2500-4622-8b32-fa46fc73bdcb/cid-249909C222CBB60C/index.html"
-       };
-       
        let activeCabinId = null;
        let formData = {};
        let currentViewDate = new Date(2025, 3, 1); // 1 april 2025
@@ -919,19 +884,6 @@
                }
            });
        });
-
-       // Functie om de Outlook-kalender te bekijken
-       function viewCalendar(cabinId) {
-           activeCabinId = cabinId;
-           const modal = document.getElementById('calendarModal');
-           modal.classList.add('active');
-           
-           document.getElementById('calendarTitle').textContent = `Beschikbaarheid Strandcabine ${cabinId}`;
-           
-           // Stel de iframe src in op de juiste kalender URL
-           const calendarFrame = document.getElementById('calendarFrame');
-           calendarFrame.src = calendarUrls[cabinId];
-       }
        
        function openBooking(cabinId) {
            activeCabinId = cabinId;
@@ -955,7 +907,6 @@
            document.getElementById('idUploadModal').classList.remove('active');
            document.getElementById('paymentModal').classList.remove('active');
            document.getElementById('confirmationModal').classList.remove('active');
-           document.getElementById('calendarModal').classList.remove('active');
            
            const form = document.getElementById('bookingForm');
            if (form) form.reset();
