@@ -492,6 +492,12 @@
    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
    
    <script>
+       // Kalender URLs voor latere toekomstige integratie
+       const calendarUrls = {
+           1: "https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/f4c108f9-ae36-4c31-b132-2049d9a0d9f9/cid-249909C222CBB60C/index.html",
+           2: "https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/1a338984-2500-4622-8b32-fa46fc73bdcb/cid-249909C222CBB60C/index.html"
+       };
+       
        let activeCabinId = null;
        let formData = {};
        let currentViewDate = new Date(2025, 3, 1); // 1 april 2025
@@ -502,30 +508,11 @@
        let calendarVisible = false;
        
        // Functie om te controleren of een datum bezet is in de Outlook-kalender
-       // In werkelijkheid zou dit een API-aanroep zijn naar je backend die de Outlook API raadpleegt
+       // Deze functie is aangepast om altijd 'false' terug te geven, wat betekent dat alle data beschikbaar zijn
        function isDateBusyInOutlook(cabinId, date) {
-           // Simuleer bezette data uit de Outlook-kalender
-           // Bij een echte implementatie zou dit gegevens ophalen uit je Outlook-kalender API
-           const busyDates = {
-               1: [
-                   // Mei data is verwijderd om deze volledig beschikbaar te maken
-                   "2025-06-15", "2025-06-16", "2025-06-17", "2025-06-18",
-                   "2025-07-01", "2025-07-02", "2025-07-03", "2025-07-04",
-                   "2025-08-20", "2025-08-21", "2025-08-22", "2025-08-23"
-               ],
-               2: [
-                   "2025-04-10", "2025-04-11", "2025-04-12", "2025-04-13",
-                   // Mei data is verwijderd om deze volledig beschikbaar te maken
-                   "2025-06-30", "2025-07-01", "2025-07-02", "2025-07-03",
-                   "2025-08-15", "2025-08-16", "2025-08-17", "2025-08-18"
-               ]
-           };
-           
-           // Converteer datum naar de juiste string-indeling (YYYY-MM-DD)
-           const dateStr = date.toISOString().split('T')[0];
-           
-           // Controleer of de datum in de lijst met bezette datums staat
-           return busyDates[cabinId].includes(dateStr);
+           // Alle datums zijn nu beschikbaar - directe integratie met Outlook API zou in een echte 
+           // implementatie hier gebeuren, maar nu retourneren we gewoon 'false' voor alle data
+           return false;
        }
        
        // Functie om de startdatum en einddatum te berekenen op basis van de geselecteerde periode
@@ -651,12 +638,8 @@
                prevMonthDay.textContent = prevMonthDate.getDate();
                prevMonthDay.dataset.date = formatDateYYYYMMDD(prevMonthDate);
                
-               // Controleer of deze datum bezet is
-               if (isDateBusyInOutlook(activeCabinId, prevMonthDate)) {
-                   prevMonthDay.classList.add('unavailable');
-               } else {
-                   prevMonthDay.addEventListener('click', () => selectDate(prevMonthDate));
-               }
+               // Alle data zijn nu beschikbaar, dus we hoeven geen 'unavailable' class toe te voegen
+               prevMonthDay.addEventListener('click', () => selectDate(prevMonthDate));
                
                calendarGrid.appendChild(prevMonthDay);
            }
@@ -689,12 +672,8 @@
                    }
                }
                
-               // Controleer of deze datum bezet is
-               if (isDateBusyInOutlook(activeCabinId, date)) {
-                   dayElement.classList.add('unavailable');
-               } else {
-                   dayElement.addEventListener('click', () => selectDate(date));
-               }
+               // Alle data zijn nu beschikbaar in de kalender
+               dayElement.addEventListener('click', () => selectDate(date));
                
                calendarGrid.appendChild(dayElement);
            }
@@ -710,12 +689,8 @@
                nextMonthDay.textContent = nextMonthDate.getDate();
                nextMonthDay.dataset.date = formatDateYYYYMMDD(nextMonthDate);
                
-               // Controleer of deze datum bezet is
-               if (isDateBusyInOutlook(activeCabinId, nextMonthDate)) {
-                   nextMonthDay.classList.add('unavailable');
-               } else {
-                   nextMonthDay.addEventListener('click', () => selectDate(nextMonthDate));
-               }
+               // Alle data zijn nu beschikbaar in de kalender
+               nextMonthDay.addEventListener('click', () => selectDate(nextMonthDate));
                
                calendarGrid.appendChild(nextMonthDay);
            }
@@ -742,10 +717,8 @@
        
        // Datum selectie functie
        function selectDate(date) {
-           // Controleer eerst of de datum niet bezet is
-           if (isDateBusyInOutlook(activeCabinId, date)) {
-               return; // Sta selectie van bezette dagen niet toe
-           }
+           // We hoeven niet meer te controleren of de datum bezet is,
+           // omdat alle datums nu beschikbaar zijn
            
            // Bepaal de selectiemodus op basis van de geselecteerde periode
            const periodSelect = document.getElementById('periodSelect');
@@ -754,14 +727,8 @@
            // Bereken het datumbereik op basis van de geselecteerde datum en periode
            const dateRange = calculateDateRange(date, period);
            
-           // Controleer of het volledige bereik beschikbaar is
-           if (!isDateRangeAvailable(activeCabinId, dateRange.start, dateRange.end)) {
-               // Toon foutmelding
-               const errorMessage = document.getElementById('dateAvailabilityMessage');
-               errorMessage.textContent = `Eén of meer dagen in de gekozen periode zijn niet beschikbaar.`;
-               errorMessage.classList.remove('hidden');
-               return;
-           }
+           // We hoeven niet meer te controleren of het bereik beschikbaar is,
+           // omdat alle datums nu beschikbaar zijn
            
            // Stel de geselecteerde start- en einddatum in
            selectedStartDate = dateRange.start;
@@ -806,17 +773,12 @@
            switch (period) {
                case 'monthApril':
                    hint = '1 april - 30 april 2025';
-                   // Controleer direct of april beschikbaar is
-                   if (!isDateRangeAvailable(activeCabinId, new Date(2025, 3, 1), new Date(2025, 3, 30))) {
-                       document.getElementById('dateAvailabilityMessage').textContent = 'April is niet volledig beschikbaar.';
-                       document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
-                   } else {
-                       document.getElementById('dateAvailabilityMessage').classList.add('hidden');
-                   }
+                   // Alle periodes zijn nu beschikbaar
+                   document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'monthMay':
                    hint = '1 mei - 31 mei 2025';
-                   // Mei is nu volledig beschikbaar, dus deze check zal altijd slagen
+                   // Alle periodes zijn nu beschikbaar
                    document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'monthSummer':
@@ -825,23 +787,13 @@
                    break;
                case 'monthSeptember':
                    hint = '1 september - 30 september 2025';
-                   // Controleer direct of september beschikbaar is
-                   if (!isDateRangeAvailable(activeCabinId, new Date(2025, 8, 1), new Date(2025, 8, 30))) {
-                       document.getElementById('dateAvailabilityMessage').textContent = 'September is niet volledig beschikbaar.';
-                       document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
-                   } else {
-                       document.getElementById('dateAvailabilityMessage').classList.add('hidden');
-                   }
+                   // Alle periodes zijn nu beschikbaar
+                   document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'season':
                    hint = '1 april - 30 september 2025';
-                   // Controleer direct of het hele seizoen beschikbaar is
-                   if (!isDateRangeAvailable(activeCabinId, new Date(2025, 3, 1), new Date(2025, 8, 30))) {
-                       document.getElementById('dateAvailabilityMessage').textContent = 'Het hele seizoen is niet volledig beschikbaar.';
-                       document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
-                   } else {
-                       document.getElementById('dateAvailabilityMessage').classList.add('hidden');
-                   }
+                   // Alle periodes zijn nu beschikbaar
+                   document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'week':
                    hint = 'Selecteer een startdatum voor de week';
