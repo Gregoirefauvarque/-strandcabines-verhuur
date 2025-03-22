@@ -98,6 +98,65 @@
        .custom-calendar-day.different-month {
            color: #9ca3af;
        }
+       
+       /* New styles for calendar sync UI */
+       .sync-indicator {
+           display: none;
+           position: absolute;
+           bottom: 10px;
+           right: 10px;
+           background-color: rgba(59, 130, 246, 0.9);
+           color: white;
+           padding: 6px 12px;
+           border-radius: 4px;
+           font-size: 12px;
+           z-index: 10;
+           align-items: center;
+       }
+       
+       .sync-indicator.active {
+           display: flex;
+       }
+       
+       .sync-spinner {
+           border: 2px solid rgba(255, 255, 255, 0.3);
+           border-radius: 50%;
+           border-top: 2px solid white;
+           width: 12px;
+           height: 12px;
+           margin-right: 6px;
+           animation: spin 1s linear infinite;
+       }
+       
+       @keyframes spin {
+           0% { transform: rotate(0deg); }
+           100% { transform: rotate(360deg); }
+       }
+       
+       .sync-button {
+           position: absolute;
+           top: 10px;
+           right: 10px;
+           background-color: #e6f2ff;
+           border: 1px solid #bfdbfe;
+           border-radius: 4px;
+           padding: 4px 8px;
+           font-size: 12px;
+           color: #3b82f6;
+           display: flex;
+           align-items: center;
+           cursor: pointer;
+       }
+       
+       .sync-button:hover {
+           background-color: #dbeafe;
+       }
+       
+       .sync-button svg {
+           width: 14px;
+           height: 14px;
+           margin-right: 4px;
+       }
    </style>
 </head>
 <body class="bg-blue-50 min-h-screen">
@@ -340,6 +399,20 @@
                                
                                <!-- Kalender dagen worden hier dynamisch ingevuld -->
                            </div>
+                           
+                           <!-- Added sync button -->
+                           <button type="button" id="calendarSyncButton" class="sync-button" onclick="manualSyncCalendars()">
+                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                               </svg>
+                               Vernieuwen
+                           </button>
+                           
+                           <!-- Added sync indicator -->
+                           <div id="syncIndicator" class="sync-indicator">
+                               <div class="sync-spinner"></div>
+                               <span>Agenda's synchroniseren...</span>
+                           </div>
                        </div>
                    </div>
                    <p id="dateAvailabilityMessage" class="text-sm text-red-600 hidden mt-1">Deze datum is niet beschikbaar.</p>
@@ -507,64 +580,233 @@
        // Kalendergedrag
        let calendarVisible = false;
        
-       // Functie om te controleren of een datum bezet is in de Outlook-kalender
-       // Deze functie is aangepast om altijd 'false' terug te geven, wat betekent dat alle data beschikbaar zijn
-       function isDateBusyInOutlook(cabinId, date) {
-           // Alle datums zijn nu beschikbaar - directe integratie met Outlook API zou in een echte 
-           // implementatie hier gebeuren, maar nu retourneren we gewoon 'false' voor alle data
-           return false;
-       }
+       // Global variables for calendar availability
+       let cabinAvailability = {
+           1: {}, // Will store date strings as keys and boolean values for cabin 1
+           2: {}  // Will store date strings as keys and boolean values for cabin 2
+       };
+       let lastSyncTime = null;
+       let isSyncing = false;
        
-       // Functie om de startdatum en einddatum te berekenen op basis van de geselecteerde periode
-       function calculateDateRange(startDate, periodType) {
+       // Function to fetch Outlook calendar events via Microsoft Graph API
+       async function fetchOutlookCalendarEvents(cabinId, startDate, endDate) {
+           try {
+               console.log(`Fetching Outlook calendar events for cabin ${cabinId} from ${startDate} to ${endDate}`);
+               
+               // Format dates for the API
+               const formattedStartDate = startDate.toISOString();
+               const formattedEndDate = endDate.toISOString();
+               
+               // Get the calendar ID from the URL
+               // Extract the calendar ID from the URL - this assumes the URL format is consistent
+               const calendarUrl = calendarUrls[cabinId];
+               const urlParts = calendarUrl.split('/');
+               const calendarId = urlParts[urlParts.length - 2]; // Get the ID before the last segment
+               
+               // In a real implementation, this would be an authenticated API call to Microsoft Graph
+               // For demonstration, we'll use a proxy endpoint that handles the authentication
+               // const apiUrl = `/api/calendar-events?calendarId=${calendarId}&startDateTime=${formattedStartDate}&endDateTime=${formattedEndDate}`;
+               
+               // Simulate network delay
+               await new Promise(resolve => setTimeout(resolve, 500));
+               
+               // For demonstration purposes, we'll simulate the response
+               // In a real implementation, you'd make an actual fetch call:
+               // const response = await fetch(apiUrl);
+               // const data = await response.json();
+               // return data.value;
+               
+               return simulateCalendarEvents(cabinId, startDate, endDate);
+           } catch (error) {
+               console.error("Error fetching Outlook calendar events:", error);
+               throw error;
+           }
+       }
+
+       // Function to simulate calendar events (for demonstration only)
+       function simulateCalendarEvents(cabinId, startDate, endDate) {
+           const events = [];
            const start = new Date(startDate);
-           let end;
+           const end = new Date(endDate);
            
-           switch (periodType) {
-               case 'week':
-                   end = new Date(start);
-                   end.setDate(end.getDate() + 6); // 7 dagen (inclusief startdag)
-                   break;
-               case 'twoWeeks':
-                   end = new Date(start);
-                   end.setDate(end.getDate() + 13); // 14 dagen (inclusief startdag)
-                   break;
-               case 'monthApril':
-                   start = new Date(2025, 3, 1); // 1 april 2025
-                   end = new Date(2025, 3, 30); // 30 april 2025
-                   break;
-               case 'monthMay':
-                   start = new Date(2025, 4, 1); // 1 mei 2025
-                   end = new Date(2025, 4, 31); // 31 mei 2025
-                   break;
-               case 'monthSummer':
-                   // De gebruiker selecteert juni, juli of augustus
-                   const month = start.getMonth();
-                   start = new Date(2025, month, 1); // Eerste dag van de geselecteerde maand
-                   
-                   // Laatste dag van de geselecteerde maand
-                   if (month === 5) { // Juni
-                       end = new Date(2025, 5, 30);
-                   } else if (month === 6) { // Juli
-                       end = new Date(2025, 6, 31);
-                   } else { // Augustus
-                       end = new Date(2025, 7, 31);
-                   }
-                   break;
-               case 'monthSeptember':
-                   start = new Date(2025, 8, 1); // 1 september 2025
-                   end = new Date(2025, 8, 30); // 30 september 2025
-                   break;
-               case 'season':
-                   start = new Date(2025, 3, 1); // 1 april 2025
-                   end = new Date(2025, 8, 30); // 30 september 2025
-                   break;
-               default:
-                   end = new Date(start);
-                   break;
+           // Create a date array for the range
+           const dateArray = [];
+           let currentDate = new Date(start);
+           while (currentDate <= end) {
+               dateArray.push(new Date(currentDate));
+               currentDate.setDate(currentDate.getDate() + 1);
            }
            
-           return { start, end };
+           // Randomly mark some dates as busy (for demonstration)
+           // In a real implementation, these would be actual events from Outlook
+           dateArray.forEach(date => {
+               // Generate random busy status based on the date and cabin ID for consistency
+               // Using a hash of the date and cabin ID ensures the same dates are always
+               // marked as busy for the same cabin
+               const dateString = formatDateYYYYMMDD(date);
+               const hash = simpleHash(`${cabinId}-${dateString}`);
+               const isBusy = hash % 10 < 2; // About 20% of dates will be busy
+               
+               if (isBusy) {
+                   const eventStart = new Date(date);
+                   const eventEnd = new Date(date);
+                   eventEnd.setHours(23, 59, 59);
+                   
+                   events.push({
+                       subject: `Booking for Cabin ${cabinId}`,
+                       start: {
+                           dateTime: eventStart.toISOString(),
+                           timeZone: 'Europe/Brussels'
+                       },
+                       end: {
+                           dateTime: eventEnd.toISOString(),
+                           timeZone: 'Europe/Brussels'
+                       },
+                       showAs: "busy"
+                   });
+               }
+           });
+           
+           return events;
+       }
+
+       // Simple hash function for consistent random generation
+       function simpleHash(str) {
+           let hash = 0;
+           for (let i = 0; i < str.length; i++) {
+               const char = str.charCodeAt(i);
+               hash = ((hash << 5) - hash) + char;
+               hash = hash & hash; // Convert to 32bit integer
+           }
+           return Math.abs(hash);
+       }
+       
+       // Function to sync calendar availability for a specific cabin
+       async function syncCabinAvailability(cabinId, forceRefresh = false) {
+           try {
+               // Set sync period - we'll sync 6 months from current date
+               const now = new Date();
+               const syncStartDate = new Date(2025, 3, 1); // April 1, 2025
+               const syncEndDate = new Date(2025, 8, 30);  // September 30, 2025
+               
+               // Get events from Outlook
+               const events = await fetchOutlookCalendarEvents(cabinId, syncStartDate, syncEndDate);
+               
+               // Process events and update availability map
+               processCalendarEvents(cabinId, events);
+               
+               console.log(`Synced availability for cabin ${cabinId}`);
+               return true;
+           } catch (error) {
+               console.error(`Failed to sync availability for cabin ${cabinId}:`, error);
+               return false;
+           }
+       }
+
+       // Function to process calendar events and update the availability map
+       function processCalendarEvents(cabinId, events) {
+           // Initialize all dates as available
+           for (let d = new Date(2025, 3, 1); d <= new Date(2025, 8, 30); d.setDate(d.getDate() + 1)) {
+               const dateString = formatDateYYYYMMDD(new Date(d));
+               cabinAvailability[cabinId][dateString] = true; // true means available
+           }
+           
+           // Mark busy dates based on events
+           events.forEach(event => {
+               const start = new Date(event.start.dateTime);
+               const end = new Date(event.end.dateTime);
+               
+               // For each day in the event range, mark it as busy
+               for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+                   const dateString = formatDateYYYYMMDD(date);
+                   cabinAvailability[cabinId][dateString] = false; // false means busy/unavailable
+               }
+           });
+       }
+
+       // Updated isDateBusyInOutlook function to use the synchronized data
+       function isDateBusyInOutlook(cabinId, date) {
+           const dateString = formatDateYYYYMMDD(date);
+           
+           // If we have data for this date in our cache, use it
+           if (dateString in cabinAvailability[cabinId]) {
+               return !cabinAvailability[cabinId][dateString]; // Return true if the date is busy/unavailable
+           }
+           
+           // If we don't have data, assume it's available (will be updated during sync)
+           return false;
+       }
+
+       // Function to synchronize all cabin calendars
+       async function syncAllCabinCalendars(forceRefresh = false) {
+           // If already syncing, don't start another sync
+           if (isSyncing) return false;
+           
+           isSyncing = true;
+           
+           try {
+               // Check if we need to sync (if not forced and we synced recently)
+               const now = new Date();
+               if (!forceRefresh && lastSyncTime && (now - lastSyncTime < 5 * 60 * 1000)) {
+                   // If last sync was less than 5 minutes ago and no force refresh,
+                   // don't sync again
+                   console.log("Using cached calendar data (synced within the last 5 minutes)");
+                   isSyncing = false;
+                   return true;
+               }
+               
+               // Show syncing indicator
+               showSyncingIndicator();
+               
+               // Sync all cabins
+               const results = await Promise.all([
+                   syncCabinAvailability(1, forceRefresh),
+                   syncCabinAvailability(2, forceRefresh)
+               ]);
+               
+               // Update last sync time
+               lastSyncTime = now;
+               
+               // Hide syncing indicator
+               hideSyncingIndicator();
+               
+               // Update the calendar view to reflect new availability
+               if (calendarVisible) {
+                   renderCalendar();
+               }
+               
+               // If all syncs were successful
+               isSyncing = false;
+               return results.every(result => result === true);
+           } catch (error) {
+               console.error("Error synchronizing calendars:", error);
+               isSyncing = false;
+               
+               // Hide syncing indicator
+               hideSyncingIndicator();
+               
+               return false;
+           }
+       }
+
+       // Functions for syncing indicators
+       function showSyncingIndicator() {
+           const indicator = document.getElementById('syncIndicator');
+           if (indicator) {
+               indicator.classList.add('active');
+           }
+       }
+
+       function hideSyncingIndicator() {
+           const indicator = document.getElementById('syncIndicator');
+           if (indicator) {
+               indicator.classList.remove('active');
+           }
+       }
+       
+       // Function for manual calendar synchronization (triggered by the user)
+       function manualSyncCalendars() {
+           syncAllCabinCalendars(true); // Force refresh
        }
        
        // Functie om te controleren of een datumbereik volledig beschikbaar is
@@ -578,8 +820,7 @@
            
            return true; // Alle dagen zijn beschikbaar
        }
-       
-       // Datum-helper functies
+      // Datum-helper functies
        function formatDate(date) {
            return date.toLocaleDateString('nl-BE', { 
                day: '2-digit', 
@@ -638,7 +879,14 @@
                prevMonthDay.textContent = prevMonthDate.getDate();
                prevMonthDay.dataset.date = formatDateYYYYMMDD(prevMonthDate);
                
-               // Alle data zijn nu beschikbaar, dus we hoeven geen 'unavailable' class toe te voegen
+               // Controleer beschikbaarheid als we een actieve cabin hebben
+               if (activeCabinId) {
+                   const isBusy = isDateBusyInOutlook(activeCabinId, prevMonthDate);
+                   if (isBusy) {
+                       prevMonthDay.classList.add('unavailable');
+                   }
+               }
+               
                prevMonthDay.addEventListener('click', () => selectDate(prevMonthDate));
                
                calendarGrid.appendChild(prevMonthDay);
@@ -660,6 +908,14 @@
                    dayElement.classList.add('today');
                }
                
+               // Controleer beschikbaarheid als we een actieve cabin hebben
+               if (activeCabinId) {
+                   const isBusy = isDateBusyInOutlook(activeCabinId, date);
+                   if (isBusy) {
+                       dayElement.classList.add('unavailable');
+                   }
+               }
+               
                // Controleer of deze datum geselecteerd is
                if (selectedStartDate && selectedEndDate) {
                    if (date >= selectedStartDate && date <= selectedEndDate) {
@@ -672,7 +928,6 @@
                    }
                }
                
-               // Alle data zijn nu beschikbaar in de kalender
                dayElement.addEventListener('click', () => selectDate(date));
                
                calendarGrid.appendChild(dayElement);
@@ -689,7 +944,14 @@
                nextMonthDay.textContent = nextMonthDate.getDate();
                nextMonthDay.dataset.date = formatDateYYYYMMDD(nextMonthDate);
                
-               // Alle data zijn nu beschikbaar in de kalender
+               // Controleer beschikbaarheid als we een actieve cabin hebben
+               if (activeCabinId) {
+                   const isBusy = isDateBusyInOutlook(activeCabinId, nextMonthDate);
+                   if (isBusy) {
+                       nextMonthDay.classList.add('unavailable');
+                   }
+               }
+               
                nextMonthDay.addEventListener('click', () => selectDate(nextMonthDate));
                
                calendarGrid.appendChild(nextMonthDay);
@@ -710,6 +972,9 @@
            if (calendarVisible) {
                calendarView.classList.remove('hidden');
                renderCalendar();
+               
+               // Sync calendars when the view is opened
+               syncAllCabinCalendars();
            } else {
                calendarView.classList.add('hidden');
            }
@@ -717,8 +982,14 @@
        
        // Datum selectie functie
        function selectDate(date) {
-           // We hoeven niet meer te controleren of de datum bezet is,
-           // omdat alle datums nu beschikbaar zijn
+           // Controleer beschikbaarheid als we een actieve cabin hebben
+           if (activeCabinId && isDateBusyInOutlook(activeCabinId, date)) {
+               // Toon foutmelding als de datum bezet is
+               const message = document.getElementById('dateAvailabilityMessage');
+               message.textContent = 'Deze datum is niet beschikbaar.';
+               message.classList.remove('hidden');
+               return;
+           }
            
            // Bepaal de selectiemodus op basis van de geselecteerde periode
            const periodSelect = document.getElementById('periodSelect');
@@ -727,8 +998,14 @@
            // Bereken het datumbereik op basis van de geselecteerde datum en periode
            const dateRange = calculateDateRange(date, period);
            
-           // We hoeven niet meer te controleren of het bereik beschikbaar is,
-           // omdat alle datums nu beschikbaar zijn
+           // Controleer of het hele bereik beschikbaar is
+           if (activeCabinId && !isDateRangeAvailable(activeCabinId, dateRange.start, dateRange.end)) {
+               // Toon foutmelding als het bereik niet volledig beschikbaar is
+               const message = document.getElementById('dateAvailabilityMessage');
+               message.textContent = 'Deze periode is niet volledig beschikbaar.';
+               message.classList.remove('hidden');
+               return;
+           }
            
            // Stel de geselecteerde start- en einddatum in
            selectedStartDate = dateRange.start;
@@ -747,6 +1024,58 @@
            
            // Herlaad de kalender om de selectie weer te geven
            renderCalendar();
+       }
+       
+       // Functie om de startdatum en einddatum te berekenen op basis van de geselecteerde periode
+       function calculateDateRange(startDate, periodType) {
+           const start = new Date(startDate);
+           let end;
+           
+           switch (periodType) {
+               case 'week':
+                   end = new Date(start);
+                   end.setDate(end.getDate() + 6); // 7 dagen (inclusief startdag)
+                   break;
+               case 'twoWeeks':
+                   end = new Date(start);
+                   end.setDate(end.getDate() + 13); // 14 dagen (inclusief startdag)
+                   break;
+               case 'monthApril':
+                   start = new Date(2025, 3, 1); // 1 april 2025
+                   end = new Date(2025, 3, 30); // 30 april 2025
+                   break;
+               case 'monthMay':
+                   start = new Date(2025, 4, 1); // 1 mei 2025
+                   end = new Date(2025, 4, 31); // 31 mei 2025
+                   break;
+               case 'monthSummer':
+                   // De gebruiker selecteert juni, juli of augustus
+                   const month = start.getMonth();
+                   start = new Date(2025, month, 1); // Eerste dag van de geselecteerde maand
+                   
+                   // Laatste dag van de geselecteerde maand
+                   if (month === 5) { // Juni
+                       end = new Date(2025, 5, 30);
+                   } else if (month === 6) { // Juli
+                       end = new Date(2025, 6, 31);
+                   } else { // Augustus
+                       end = new Date(2025, 7, 31);
+                   }
+                   break;
+               case 'monthSeptember':
+                   start = new Date(2025, 8, 1); // 1 september 2025
+                   end = new Date(2025, 8, 30); // 30 september 2025
+                   break;
+               case 'season':
+                   start = new Date(2025, 3, 1); // 1 april 2025
+                   end = new Date(2025, 8, 30); // 30 september 2025
+                   break;
+               default:
+                   end = new Date(start);
+                   break;
+           }
+           
+           return { start, end };
        }
        
        // Functie om de kalenderweergave bij te werken wanneer de periode verandert
@@ -773,12 +1102,10 @@
            switch (period) {
                case 'monthApril':
                    hint = '1 april - 30 april 2025';
-                   // Alle periodes zijn nu beschikbaar
                    document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'monthMay':
                    hint = '1 mei - 31 mei 2025';
-                   // Alle periodes zijn nu beschikbaar
                    document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'monthSummer':
@@ -787,12 +1114,10 @@
                    break;
                case 'monthSeptember':
                    hint = '1 september - 30 september 2025';
-                   // Alle periodes zijn nu beschikbaar
                    document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'season':
                    hint = '1 april - 30 september 2025';
-                   // Alle periodes zijn nu beschikbaar
                    document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'week':
@@ -808,40 +1133,6 @@
            document.getElementById('selectedDateDisplay').placeholder = hint;
        }
 
-       // Initialiseer de kaart wanneer het document geladen is
-       document.addEventListener('DOMContentLoaded', function() {
-           // Coördinaten: 51°19'04.1"N 3°07'58.5"E = 51.317806, 3.132917
-           const lat = 51.317806;
-           const lng = 3.132917;
-           
-           // Maak een nieuwe kaart in het "map" element
-           const map = L.map('map').setView([lat, lng], 16);
-           
-           // Voeg de OpenStreetMap tile layer toe
-           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-               attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-           }).addTo(map);
-           
-           // Voeg een marker toe op de locatie
-           const marker = L.marker([lat, lng]).addTo(map);
-           
-           // Voeg een popup toe
-           marker.bindPopup("<strong>Strandcabines Blankenberge</strong><br>Hier vindt u onze strandcabines!").openPopup();
-           
-           // Sluit eventuele actieve modals bij klikken buiten kalenderweergave
-           document.addEventListener('click', function(event) {
-               const calendarView = document.getElementById('calendarView');
-               const dateDisplay = document.getElementById('selectedDateDisplay');
-               
-               if (calendarVisible && 
-                   !calendarView.contains(event.target) && 
-                   event.target !== dateDisplay) {
-                   calendarVisible = false;
-                   calendarView.classList.add('hidden');
-               }
-           });
-       });
-       
        function openBooking(cabinId) {
            activeCabinId = cabinId;
            document.getElementById('cabinId').value = cabinId;
@@ -971,6 +1262,40 @@
                closeModal();
            }
        }
+
+       // Initialiseer de kaart wanneer het document geladen is
+       document.addEventListener('DOMContentLoaded', function() {
+           // Coördinaten: 51°19'04.1"N 3°07'58.5"E = 51.317806, 3.132917
+           const lat = 51.317806;
+           const lng = 3.132917;
+           
+           // Maak een nieuwe kaart in het "map" element
+           const map = L.map('map').setView([lat, lng], 16);
+           
+           // Voeg de OpenStreetMap tile layer toe
+           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+               attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+           }).addTo(map);
+           
+           // Voeg een marker toe op de locatie
+           const marker = L.marker([lat, lng]).addTo(map);
+           
+           // Voeg een popup toe
+           marker.bindPopup("<strong>Strandcabines Blankenberge</strong><br>Hier vindt u onze strandcabines!").openPopup();
+           
+           // Sluit eventuele actieve modals bij klikken buiten kalenderweergave
+           document.addEventListener('click', function(event) {
+               const calendarView = document.getElementById('calendarView');
+               const dateDisplay = document.getElementById('selectedDateDisplay');
+               
+               if (calendarVisible && 
+                   !calendarView.contains(event.target) && 
+                   event.target !== dateDisplay) {
+                   calendarVisible = false;
+                   calendarView.classList.add('hidden');
+               }
+           });
+       });
    </script>
 </body>
 </html>
