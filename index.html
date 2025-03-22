@@ -508,15 +508,14 @@
            // Bij een echte implementatie zou dit gegevens ophalen uit je Outlook-kalender API
            const busyDates = {
                1: [
-                   "2025-05-05", "2025-05-06", "2025-05-07", "2025-05-08",
-                   "2025-05-09", "2025-05-10", "2025-05-11", "2025-05-12", 
+                   // Mei data is verwijderd om deze volledig beschikbaar te maken
                    "2025-06-15", "2025-06-16", "2025-06-17", "2025-06-18",
                    "2025-07-01", "2025-07-02", "2025-07-03", "2025-07-04",
                    "2025-08-20", "2025-08-21", "2025-08-22", "2025-08-23"
                ],
                2: [
                    "2025-04-10", "2025-04-11", "2025-04-12", "2025-04-13",
-                   "2025-05-25", "2025-05-26", "2025-05-27", "2025-05-28",
+                   // Mei data is verwijderd om deze volledig beschikbaar te maken
                    "2025-06-30", "2025-07-01", "2025-07-02", "2025-07-03",
                    "2025-08-15", "2025-08-16", "2025-08-17", "2025-08-18"
                ]
@@ -811,18 +810,18 @@
                    if (!isDateRangeAvailable(activeCabinId, new Date(2025, 3, 1), new Date(2025, 3, 30))) {
                        document.getElementById('dateAvailabilityMessage').textContent = 'April is niet volledig beschikbaar.';
                        document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
+                   } else {
+                       document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    }
                    break;
                case 'monthMay':
                    hint = '1 mei - 31 mei 2025';
-                   // Controleer direct of mei beschikbaar is
-                   if (!isDateRangeAvailable(activeCabinId, new Date(2025, 4, 1), new Date(2025, 4, 31))) {
-                       document.getElementById('dateAvailabilityMessage').textContent = 'Mei is niet volledig beschikbaar.';
-                       document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
-                   }
+                   // Mei is nu volledig beschikbaar, dus deze check zal altijd slagen
+                   document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'monthSummer':
                    hint = 'Selecteer een startdatum in juni, juli of augustus';
+                   document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'monthSeptember':
                    hint = '1 september - 30 september 2025';
@@ -830,6 +829,8 @@
                    if (!isDateRangeAvailable(activeCabinId, new Date(2025, 8, 1), new Date(2025, 8, 30))) {
                        document.getElementById('dateAvailabilityMessage').textContent = 'September is niet volledig beschikbaar.';
                        document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
+                   } else {
+                       document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    }
                    break;
                case 'season':
@@ -838,13 +839,17 @@
                    if (!isDateRangeAvailable(activeCabinId, new Date(2025, 3, 1), new Date(2025, 8, 30))) {
                        document.getElementById('dateAvailabilityMessage').textContent = 'Het hele seizoen is niet volledig beschikbaar.';
                        document.getElementById('dateAvailabilityMessage').classList.remove('hidden');
+                   } else {
+                       document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    }
                    break;
                case 'week':
                    hint = 'Selecteer een startdatum voor de week';
+                   document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
                case 'twoWeeks':
                    hint = 'Selecteer een startdatum voor de 2 weken';
+                   document.getElementById('dateAvailabilityMessage').classList.add('hidden');
                    break;
            }
            
